@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { REST, Routes } from "discord.js";
+import { ApplicationCommandOptionType } from "discord.js";
 
 const commands = [
   {
@@ -26,6 +27,18 @@ const commands = [
         name: "code",
         description: "A kódod",
         type: 3,
+        required: true,
+      },
+    ],
+  },
+  {
+    name: "register",
+    description: "Regisztrál egy felhasználót az adatbázisba",
+    options: [
+      {
+        name: "username",
+        description: "A felhasználó neve",
+        type: ApplicationCommandOptionType.User,
         required: true,
       },
     ],

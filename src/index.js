@@ -33,6 +33,7 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.isChatInputCommand()) {
     if (interaction.commandName === "submit") {
       const code = interaction.options.getString("code");
+      const submitter = interaction.user;
 
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
@@ -54,9 +55,37 @@ client.on("interactionCreate", async (interaction) => {
           .setEmoji("❓") // Add emoji
       );
 
+      const embed = new EmbedBuilder()
+        .setColor(0x0099ff)
+        .setTitle("Code Submission")
+        .setDescription(`\`\`\`${code}\`\`\``)
+        .addFields(
+          { name: "Submitted by", value: `${submitter.tag}`, inline: true },
+
+          {
+            name: "Submitted in",
+            value: `${interaction.channel.name}`,
+            inline: true,
+          },
+          {
+            name: "Status",
+            value: "Pending approval",
+            inline: false,
+          }
+        )
+        .setTimestamp();
+
+      const targetChannel = interaction.guild.channels.cache.get(
+        `${process.env.SUBMIT_CHANNEL_ID}`
+      ); // Replace with your target channel ID
+
+      if (targetChannel) {
+        await targetChannel.send({ embeds: [embed], components: [row] });
+      }
+
       await interaction.reply({
-        content: `\`\`\`${code}\`\`\``,
-        components: [row],
+        content: "Your code has been submitted!",
+        ephemeral: true,
       });
     } else if (interaction.commandName === "clear") {
       const count = interaction.options.getInteger("count");
