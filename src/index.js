@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import pkg from "discord.js";
 import { PermissionsBitField } from "discord.js";
+import { registerUser } from "../models/registerHandler.js";
 
 const {
   Client,
@@ -140,6 +141,16 @@ client.on("interactionCreate", async (interaction) => {
 client.on("messageCreate", (message) => {
   if (message.content === "!ping") {
     message.reply("pong");
+  }
+});
+
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  switch (interaction.commandName) {
+    case "register":
+      await registerUser(interaction);
+      break;
   }
 });
 

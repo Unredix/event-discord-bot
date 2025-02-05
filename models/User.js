@@ -29,18 +29,4 @@ const User = sequelize.define(
   }
 );
 
-(async () => {
-  try {
-    await sequelize.authenticate(); // Ensure the database connection is established
-    const newUser = await User.create({
-      username: "Wat",
-      points: 0,
-      group: "A2",
-    });
-    console.log("User added:", newUser.toJSON());
-  } catch (error) {
-    console.error("Error adding user:", error);
-  }
-})();
-
 export { User };
