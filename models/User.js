@@ -1,27 +1,37 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../src/sequelizeInstance.js";
 
-const User = sequelize.define("User", {
-  username: {
-    type: DataTypes.STRING,
-    unique: true,
-    allowNull: false
+const User = sequelize.define(
+  "User",
+  {
+    ROWID: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    username: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+    },
+    points: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    group: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   },
-  points: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  group: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-}, {
-  tableName: "users", // Match your actual table name
-  timestamps: false,  // Disable timestamps if not present
-});
+  {
+    tableName: "users", // Match your actual table name
+    timestamps: false, // Disable timestamps if not present
+  }
+);
 
 (async () => {
   try {
+    await sequelize.authenticate(); // Ensure the database connection is established
     const newUser = await User.create({
       username: "Wat",
       points: 0,
@@ -32,3 +42,5 @@ const User = sequelize.define("User", {
     console.error("Error adding user:", error);
   }
 })();
+
+export { User };

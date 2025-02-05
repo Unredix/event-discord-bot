@@ -1,12 +1,19 @@
 import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
 
-// Change these values based on your database type
-const sequelize = new Sequelize("data", "username", "password", {
-  host: "localhost", // Use '127.0.0.1' or your server's IP
-  dialect: "sqlite", // Or 'sqlite', 'postgres', etc.
-  logging: false, // Disable logging to reduce clutter
-  storage: "data/identifier.sqlite", // SQLite only
-});
+dotenv.config();
+
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST || "localhost",
+    dialect: process.env.DB_DIALECT || "sqlite",
+    logging: false,
+    storage: process.env.DB_STORAGE || "data/identifier.sqlite", // SQLite only
+  }
+);
 
 // Test the connection
 (async () => {
