@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import pkg from "discord.js";
+import { PermissionsBitField } from "discord.js";
 
 const {
   Client,
@@ -31,7 +32,16 @@ client.on("interactionCreate", async (interaction) => {
   console.log(`Interaction received: ${interaction.type}`);
 
   if (interaction.isChatInputCommand()) {
+    const roleId = `${process.env.PARTICIPANT_ROLE_ID}`;
+
     if (interaction.commandName === "submit") {
+      if (!interaction.member.roles.cache.has(roleId)) {
+        return interaction.reply({
+          content: "You do not have permission to use this command.",
+          ephemeral: true,
+        });
+      }
+
       const code = interaction.options.getString("code");
       const submitter = interaction.user;
 
@@ -88,6 +98,17 @@ client.on("interactionCreate", async (interaction) => {
         ephemeral: true,
       });
     } else if (interaction.commandName === "clear") {
+      if (
+        !interaction.member.permissions.has(
+          PermissionsBitField.Flags.ManageMessages
+        )
+      ) {
+        return interaction.reply({
+          content: "You do not have permission to use this command.",
+          ephemeral: true,
+        });
+      }
+
       const count = interaction.options.getInteger("count");
       await interaction.channel.bulkDelete(count);
       await interaction.reply({
