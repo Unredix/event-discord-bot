@@ -5,7 +5,7 @@ const sequelize = new Sequelize("data", "username", "password", {
   host: "localhost", // Use '127.0.0.1' or your server's IP
   dialect: "sqlite", // Or 'sqlite', 'postgres', etc.
   logging: false, // Disable logging to reduce clutter
-  storage: "data/database.sqlite", // SQLite only
+  storage: "data/identifier.sqlite", // SQLite only
 });
 
 // Test the connection

@@ -41,6 +41,12 @@ const commands = [
         type: ApplicationCommandOptionType.User,
         required: true,
       },
+      {
+        name: "group",
+        description: "A felhasználó csoportja (pl: 'A1')",
+        type: 3,
+        required: true,
+      },
     ],
   },
 ];
@@ -51,20 +57,20 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
   try {
     console.log("Registering slash commands...");
     await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID
-      ),
-      { body: commands }
+        Routes.applicationGuildCommands(
+            process.env.CLIENT_ID,
+            process.env.GUILD_ID
+        ),
+        { body: commands }
     );
     console.log("Slash commands registered.");
 
     // Fetching all registered commands
     const registeredCommands = await rest.get(
-      Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID
-      )
+        Routes.applicationGuildCommands(
+            process.env.CLIENT_ID,
+            process.env.GUILD_ID
+        )
     );
     console.log("Registered commands:", registeredCommands);
   } catch (error) {
