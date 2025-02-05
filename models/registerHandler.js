@@ -13,7 +13,11 @@ export async function registerUser(interaction) {
         }
 
         // Create new user
-        await User.create({ username, points: 0, group });
+        await User.create({
+            username: username,
+            points: 0,
+            group: group
+        });
 
         await interaction.reply({ content: `User **${username}** registered in group **${group}**!`, ephemeral: true });
     } catch (error) {
