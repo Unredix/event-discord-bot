@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import pkg from "discord.js";
 import { PermissionsBitField } from "discord.js";
 import { registerUser, unregisterUser } from "../models/registerHandler.js";
+import { functionstart } from "./startfunction.js"
 
 const {
   Client,
@@ -124,6 +125,11 @@ client.on("interactionCreate", async (interaction) => {
           ephemeral: true,
         });
       }
+
+      const TARGET_ROLE_ID = '1336742482720985239';
+      const NEW_ROLE_ID = '1336726820221095936';
+
+      await functionstart(interaction, TARGET_ROLE_ID, NEW_ROLE_ID);
 
       const targetChannel = interaction.guild.channels.cache.get(
         `${process.env.SUBMIT_CHANNEL_ID}`
