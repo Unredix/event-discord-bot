@@ -51,6 +51,10 @@ const commands = [
     name: "unregister",
     description: "Törli a felhasználót az adatbázisból",
   },
+  {
+    name: "start",
+    description: "Elindítja a versenyt",
+  },
 ];
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);

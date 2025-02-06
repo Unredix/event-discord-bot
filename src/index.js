@@ -113,6 +113,30 @@ client.on("interactionCreate", async (interaction) => {
       await interaction.reply({
         content: `Deleted ${count} messages.`,
       });
+    } else if (interaction.commandName === "start") {
+      if (
+        !interaction.member.permissions.has(
+          PermissionsBitField.Flags.Administrator
+        )
+      ) {
+        return interaction.reply({
+          content: "You do not have permission to use this command.",
+          ephemeral: true,
+        });
+      }
+
+      const targetChannel = interaction.guild.channels.cache.get(
+        `${process.env.SUBMIT_CHANNEL_ID}`
+      ); // Replace with your target channel ID
+
+      if (targetChannel) {
+        await targetChannel.send("The competition has started!");
+      }
+
+      await interaction.reply({
+        content: "The competition has started!",
+        ephemeral: true,
+      });
     }
   } else if (interaction.isButton()) {
     console.log(`Button interaction received: ${interaction.customId}`);
