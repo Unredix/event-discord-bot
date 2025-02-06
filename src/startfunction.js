@@ -1,19 +1,29 @@
-async function functionstart(interaction, targetRoleId, newRoleId) {
-    try {
-        // Gets all the users
-        await interaction.deferReply();
-        const members = await interaction.guild.members.fetch();
+export async function functionstart(interaction, targetRoleId, newRoleId) {
+  try {
+    // Defer the reply to give more time for processing
+    await interaction.deferReply({ ephemeral: true });
 
-        for (const member of members.values()) {
-            if (member.roles.cache.has(targetRoleId) && !member.roles.cache.has(newRoleId)) {
-                await member.roles.add(newRoleId).catch(console.error);
-            }
-        }
+    // Gets all the users
+    const members = await interaction.guild.members.fetch();
 
-    } catch (error) {
-        console.error(error);
-        interaction.editReply('❌ An error while starting the game');
+    for (const member of members.values()) {
+      if (
+        member.roles.cache.has(targetRoleId) &&
+        !member.roles.cache.has(newRoleId)
+      ) {
+        await member.roles.add(newRoleId).catch(console.error);
+      }
     }
-}
 
-module.exports = { functionstart } ;
+    await interaction.followUp({
+      content: "Started the event",
+      ephemeral: true,
+    });
+  } catch (error) {
+    console.error(error);
+    await interaction.followUp({
+      content: "An error occurred while starting the event.",
+      ephemeral: true,
+    });
+  }
+}

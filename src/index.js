@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import pkg from "discord.js";
 import { PermissionsBitField } from "discord.js";
 import { registerUser, unregisterUser } from "../models/registerHandler.js";
-import { functionstart } from "./startfunction.js"
+import { functionstart } from "./startfunction.js";
 
 const {
   Client,
@@ -113,6 +113,7 @@ client.on("interactionCreate", async (interaction) => {
       await interaction.channel.bulkDelete(count);
       await interaction.reply({
         content: `Deleted ${count} messages.`,
+        ephemeral: true,
       });
     } else if (interaction.commandName === "start") {
       if (
@@ -126,23 +127,10 @@ client.on("interactionCreate", async (interaction) => {
         });
       }
 
-      const TARGET_ROLE_ID = '1336742482720985239';
-      const NEW_ROLE_ID = '1336726820221095936';
+      const TARGET_ROLE_ID = "1336742482720985239";
+      const NEW_ROLE_ID = "1336726820221095936";
 
       await functionstart(interaction, TARGET_ROLE_ID, NEW_ROLE_ID);
-
-      const targetChannel = interaction.guild.channels.cache.get(
-        `${process.env.SUBMIT_CHANNEL_ID}`
-      ); // Replace with your target channel ID
-
-      if (targetChannel) {
-        await targetChannel.send("The competition has started!");
-      }
-
-      await interaction.reply({
-        content: "The competition has started!",
-        ephemeral: true,
-      });
     }
   } else if (interaction.isButton()) {
     console.log(`Button interaction received: ${interaction.customId}`);
