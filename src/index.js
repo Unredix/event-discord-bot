@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import pkg from "discord.js";
 import { PermissionsBitField } from "discord.js";
-import { registerUser } from "../models/registerHandler.js";
+import { registerUser, unregisterUser } from "../models/registerHandler.js";
 
 const {
   Client,
@@ -150,6 +150,16 @@ client.on("interactionCreate", async (interaction) => {
   switch (interaction.commandName) {
     case "register":
       await registerUser(interaction);
+
+      interaction.member.roles.add(process.env.PARTICIPANT_ROLE_ID);
+
+      break;
+
+    case "unregister":
+      await unregisterUser(interaction);
+
+      interaction.member.roles.remove(process.env.PARTICIPANT_ROLE_ID);
+
       break;
   }
 });
