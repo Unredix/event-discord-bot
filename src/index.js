@@ -30,8 +30,6 @@ client.on("ready", () => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-  console.log(`Interaction received: ${interaction.type}`);
-
   if (interaction.isChatInputCommand()) {
     const roleId = `${process.env.PARTICIPANT_ROLE_ID}`;
 

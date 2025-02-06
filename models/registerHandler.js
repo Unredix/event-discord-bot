@@ -26,6 +26,7 @@ export async function registerUser(interaction) {
       content: `**${username}** regisztrálva lett mint **${group}**!`,
       ephemeral: true,
     });
+    console.log(`User registered: ${username}`);
   } catch (error) {
     console.error("Error registering user:", error);
     await interaction.reply({
@@ -56,6 +57,8 @@ export async function unregisterUser(interaction) {
       content: `**${username}** törölve lett az adatbázisból!`,
       ephemeral: true,
     });
+
+    console.log(`User unregistered: ${username}`);
   } catch (error) {
     console.error("Error unregistering user:", error);
     await interaction.reply({
