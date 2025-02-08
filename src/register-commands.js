@@ -24,9 +24,9 @@ const commands = [
     description: "Ezzel addod be a kódod",
     options: [
       {
-        name: "code",
-        description: "A kódod",
-        type: 3,
+        name: "attachment",
+        description: "A kódod (pl: 'main.py')",
+        type: ApplicationCommandOptionType.Attachment,
         required: true,
       },
     ],

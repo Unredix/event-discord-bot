@@ -14,7 +14,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
     console.log("Registered commands:", registeredCommands);
 
     const commandId = registeredCommands.find(
-      (cmd) => cmd.name === "register"
+      (cmd) => cmd.name === "submit"
     ).id;
 
     await rest.delete(

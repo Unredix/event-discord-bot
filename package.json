@@ -10,6 +10,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "black": "^0.3.0",
     "discord.js": "^14.16.3",
     "discord.py": "^1.0.0",
     "dotenv": "^16.4.5",

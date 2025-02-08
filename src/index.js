@@ -3,6 +3,7 @@ import pkg from "discord.js";
 import { PermissionsBitField } from "discord.js";
 import { registerUser, unregisterUser } from "../models/registerHandler.js";
 import { functionstart } from "./startfunction.js";
+import { approvedSubmit, declinedSubmit } from "./approveHandler.js";
 
 const {
   Client,
@@ -42,7 +43,7 @@ client.on("interactionCreate", async (interaction) => {
         });
       }
 
-      const code = interaction.options.getString("code");
+      const attachment = interaction.options.getAttachment("attachment");
       const submitter = interaction.user;
 
       const row = new ActionRowBuilder().addComponents(
@@ -56,7 +57,7 @@ client.on("interactionCreate", async (interaction) => {
           .setCustomId("not_approved")
           .setLabel("Not Approved")
           .setStyle(ButtonStyle.Danger)
-          .setEmoji("❌"), // Add emoji
+          .setEmoji("✖️"), // Add emoji
 
         new ButtonBuilder()
           .setCustomId("other")
@@ -68,7 +69,6 @@ client.on("interactionCreate", async (interaction) => {
       const embed = new EmbedBuilder()
         .setColor(0x0099ff)
         .setTitle("Code Submission")
-        .setDescription(`\`\`\`${code}\`\`\``)
         .addFields(
           { name: "Submitted by", value: `${submitter.tag}`, inline: true },
 
@@ -81,9 +81,23 @@ client.on("interactionCreate", async (interaction) => {
             name: "Status",
             value: "Pending approval",
             inline: false,
+          },
+          {
+            name: "Points",
+            value: "not yet known",
+            inline: true,
+          },
+          {
+            name: "Time of submission",
+            value: "0",
+            inline: true,
           }
         )
         .setTimestamp();
+      
+        if (attachment) {
+          embed.addFields({ name: "Attachment", value: `[${attachment.name}](${attachment.url})`, inline: false });
+        }
 
       const targetChannel = interaction.guild.channels.cache.get(
         `${process.env.SUBMIT_CHANNEL_ID}`
@@ -140,11 +154,13 @@ client.on("interactionCreate", async (interaction) => {
         content: "You clicked Approved!",
         ephemeral: true,
       });
+      approvedSubmit(interaction.user.tag);
     } else if (interaction.customId === "not_approved") {
       await interaction.reply({
         content: "You clicked Not Approved!",
         ephemeral: true,
       });
+      declinedSubmit(interaction.user.tag);
     } else if (interaction.customId === "other") {
       await interaction.reply({
         content: "You clicked Other!",
