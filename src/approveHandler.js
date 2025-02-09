@@ -19,6 +19,7 @@ export async function approvedSubmit(user) {
       if (user.roles.cache.has(roles[`lvl${i}`])) {
         await user.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
         await user.roles.remove(roles[`lvl${i}`]).catch(console.error);
+        break;
       }
     }
 
