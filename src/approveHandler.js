@@ -16,9 +16,9 @@ export async function approvedSubmit(user) {
     };
 
     for (let i = 1; i <= 5; i++) {
-      if (user.roles.cache.has(roles[`lvl${i}`])) {
-        await user.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
-        await user.roles.remove(roles[`lvl${i}`]).catch(console.error);
+      if (username.roles.cache.has(roles[`lvl${i}`])) {
+        await username.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
+        await username.roles.remove(roles[`lvl${i}`]).catch(console.error);
       }
     }
 
