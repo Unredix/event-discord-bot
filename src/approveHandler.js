@@ -25,10 +25,10 @@ export async function approvedSubmit(user) {
           User.level = `lvl${i + 1}`
           break;
         }
-        else {
-          console.error(`User couldn't be found`);
-        }
       }
+    }
+    else {
+      console.error(`User couldn't be found`);
     }
 
     switch (declined_number) {
