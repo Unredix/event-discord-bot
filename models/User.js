@@ -22,6 +22,10 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    level: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    }
   },
   {
     tableName: "users", // Match your actual table name

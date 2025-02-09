@@ -20,6 +20,7 @@ export async function registerUser(interaction) {
       username: username,
       points: 0,
       group: group,
+      level: "lvl1"
     });
 
     await interaction.reply({

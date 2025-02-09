@@ -15,11 +15,19 @@ export async function approvedSubmit(user) {
       lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
     };
 
-    for (let i = 1; i <= 5; i++) {
-      if (username.roles.cache.has(roles[`lvl${i}`])) {
-        await username.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
-        await username.roles.remove(roles[`lvl${i}`]).catch(console.error);
-        break;
+    const existingUser = await User.findOne({ where: { username } });
+
+    if (existingUser) {
+      for (let i = 1; i <= 5; i++) {
+        if (user.roles.cache.has(roles[`lvl${i}`])) {
+          await user.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
+          await user.roles.remove(roles[`lvl${i}`]).catch(console.error);
+          User.level = `lvl${i + 1}`
+          break;
+        }
+        else {
+          console.error(`User couldn't be found`);
+        }
       }
     }
 
