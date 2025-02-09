@@ -71,33 +71,24 @@ client.on("interactionCreate", async (interaction) => {
         .setTitle("Code Submission")
         .addFields(
           { name: "Submitted by", value: `${submitter.tag}`, inline: true },
-
           {
             name: "Submitted in",
             value: `${interaction.channel.name}`,
             inline: true,
           },
-          {
-            name: "Status",
-            value: "Pending approval",
-            inline: false,
-          },
-          {
-            name: "Points",
-            value: "not yet known",
-            inline: true,
-          },
-          {
-            name: "Time of submission",
-            value: "0",
-            inline: true,
-          }
+          { name: "Status", value: "Pending approval", inline: false },
+          { name: "Points", value: "not yet known", inline: true },
+          { name: "Time of submission", value: "0", inline: true }
         )
         .setTimestamp();
-      
-        if (attachment) {
-          embed.addFields({ name: "Attachment", value: `[${attachment.name}](${attachment.url})`, inline: false });
-        }
+
+      if (attachment) {
+        embed.addFields({
+          name: "Attachment",
+          value: `[${attachment.name}](${attachment.url})`,
+          inline: false,
+        });
+      }
 
       const targetChannel = interaction.guild.channels.cache.get(
         `${process.env.SUBMIT_CHANNEL_ID}`
@@ -150,17 +141,17 @@ client.on("interactionCreate", async (interaction) => {
     console.log(`Button interaction received: ${interaction.customId}`);
 
     if (interaction.customId === "approved") {
+      await approvedSubmit(interaction.member);
       await interaction.reply({
         content: "You clicked Approved!",
         ephemeral: true,
       });
-      approvedSubmit(interaction.user.tag);
     } else if (interaction.customId === "not_approved") {
+      await declinedSubmit(interaction.member);
       await interaction.reply({
         content: "You clicked Not Approved!",
         ephemeral: true,
       });
-      declinedSubmit(interaction.user.tag);
     } else if (interaction.customId === "other") {
       await interaction.reply({
         content: "You clicked Other!",
