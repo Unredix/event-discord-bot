@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { REST, Routes } from "discord.js";
+import { applicationDirectory, REST, Routes } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 
 const commands = [
@@ -54,6 +54,54 @@ const commands = [
   {
     name: "start",
     description: "Elindítja a versenyt",
+  },
+  {
+    name: "addpoints",
+    description: "Hozzáad pontokat egy felhasználónak",
+    options: [
+      {
+        name: "user",
+        description: "A felhasználó neve",
+        type: ApplicationCommandOptionType.User,
+        required: true,
+      },
+      {
+        name: "points",
+        description: "A pontok száma",
+        type: ApplicationCommandOptionType.Integer,
+        required: true,
+      },
+    ],
+  },
+  {
+    name: "removepoints",
+    description: "Levon pontokat egy felhasználótól",
+    options: [
+      {
+        name: "user",
+        description: "A felhasználó neve",
+        type: ApplicationCommandOptionType.User,
+        required: true,
+      },
+      {
+        name: "points",
+        description: "A pontok száma",
+        type: ApplicationCommandOptionType.Integer,
+        required: true,
+      },
+    ],
+  },
+  {
+    name: "getpoints",
+    description: "Kiírja egy felhasználó pontjait",
+    options: [
+      {
+        name: "user",
+        description: "A felhasználó neve",
+        type: ApplicationCommandOptionType.User,
+        required: true,
+      },
+    ],
   },
 ];
 

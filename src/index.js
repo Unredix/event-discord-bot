@@ -4,6 +4,7 @@ import { PermissionsBitField } from "discord.js";
 import { registerUser, unregisterUser } from "../models/registerHandler.js";
 import { functionstart } from "./startfunction.js";
 import { approvedSubmit, declinedSubmit } from "./approveHandler.js";
+import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
 
 const {
   Client,
@@ -136,6 +137,72 @@ client.on("interactionCreate", async (interaction) => {
       const NEW_ROLE_ID = "1336726820221095936";
 
       await functionstart(interaction, TARGET_ROLE_ID, NEW_ROLE_ID);
+    } else if (interaction.commandName === "addpoints") {
+      if (
+        !interaction.member.permissions.has(
+          PermissionsBitField.Flags.Administrator
+        )
+      ) {
+        return interaction.reply({
+          content: "You do not have permission to use this command.",
+          ephemeral: true,
+        });
+      }
+
+      const user = interaction.options.getUser("user");
+      const points = interaction.options.getInteger("points");
+
+      await addPoints(user.tag, points);
+
+      const newPoints = await getPoints(user.tag);
+
+      await interaction.reply({
+        content: `${points} hozzá lett adva ${user.tag}-hoz/hez. Új pontszám: ${newPoints}`,
+        ephemeral: true,
+      });
+    } else if (interaction.commandName == "removepoints") {
+      if (
+        !interaction.member.permissions.has(
+          PermissionsBitField.Flags.Administrator
+        )
+      ) {
+        return interaction.reply({
+          content: "You do not have permission to use this command.",
+          ephemeral: true,
+        });
+      }
+
+      const user = interaction.options.getUser("user");
+      const points = interaction.options.getInteger("points");
+
+      await removePoints(user.tag, points);
+
+      const newPoints = await getPoints(user.tag);
+
+      await interaction.reply({
+        content: `${points} levonva ${user.tag}-tól. Új pontszám: ${newPoints}`,
+        ephemeral: true,
+      });
+    } else if (interaction.commandName == "getpoints") {
+      if (
+        !interaction.member.permissions.has(
+          PermissionsBitField.Flags.Administrator
+        )
+      ) {
+        return interaction.reply({
+          content: "You do not have permission to use this command.",
+          ephemeral: true,
+        });
+      }
+
+      const user = interaction.options.getUser("user");
+
+      const points = await getPoints(user.tag);
+
+      await interaction.reply({
+        content: `${user.tag} pontszáma: ${points}`,
+        ephemeral: true,
+      });
     }
   } else if (interaction.isButton()) {
     console.log(`Button interaction received: ${interaction.customId}`);

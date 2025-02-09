@@ -1,2 +1,2 @@
 
-  GatewayIntentBits,
+        process.env.CLIENT_ID,
