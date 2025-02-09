@@ -1,10 +1,10 @@
-import { addPoints, removePoints, getPoints } from "./pointsHandler";
+import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
 import { User } from "../models/User.js";
 
 let points = 0;
 let declined_number = 0;
 
-export async function approvedSubmit(username) {
+export async function approvedSubmit(user) {
   try {
     let roles = {
       lvl1: "1336726820221095936",
@@ -12,18 +12,15 @@ export async function approvedSubmit(username) {
       lvl3: "1336727394492612648",
       lvl4: "1336727438553780234",
       lvl5: "1336727514869006447",
-      lvl6: "1338135228107067423" //Labeled as lvl6 but it's the winners role
-    }
+      lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
+    };
 
     for (let i = 1; i <= 5; i++) {
-      if (username.roles.cache.has(roles[`lvl${i}`])) {
-        await username.roles.add(roles[`lvl${i+1}`]).catch(console.error);
-        await username.roles.remove(roles[`lvl${i}`]).catch(console.error);
+      if (user.roles.cache.has(roles[`lvl${i}`])) {
+        await user.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
+        await user.roles.remove(roles[`lvl${i}`]).catch(console.error);
       }
     }
-
-
-
 
     switch (declined_number) {
       case 0:
@@ -45,20 +42,20 @@ export async function approvedSubmit(username) {
         points += 0;
     }
 
-    addPoints(username, points);
-    let newPoints = getPoints(username);
+    await addPoints(user.tag, points);
+    let newPoints = await getPoints(user.tag);
 
     declined_number = 0;
 
     console.log(
-      `Added ${points} points to user ${username}. New total: ${newPoints}`
+      `Added ${points} points to user ${user.tag}. New total: ${newPoints}`
     );
   } catch (error) {
     console.error("Error submitting approval:", error);
   }
 }
 
-export async function declinedSubmit(username) {
+export async function declinedSubmit(user) {
   try {
     declined_number += 1;
   } catch (error) {
