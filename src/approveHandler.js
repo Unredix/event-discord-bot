@@ -6,6 +6,25 @@ let declined_number = 0;
 
 export async function approvedSubmit(username) {
   try {
+    let roles = {
+      lvl1: "1336726820221095936",
+      lvl2: "1336726882472820747",
+      lvl3: "1336727394492612648",
+      lvl4: "1336727438553780234",
+      lvl5: "1336727514869006447",
+      lvl6: "1338135228107067423" //Labeled as lvl6 but it's the winners role
+    }
+
+    for (let i = 1; i <= 5; i++) {
+      if (username.roles.cache.has(roles[`lvl${i}`])) {
+        await username.roles.add(roles[`lvl${i+1}`]).catch(console.error);
+        await username.roles.remove(roles[`lvl${i}`]).catch(console.error);
+      }
+    }
+
+
+
+
     switch (declined_number) {
       case 0:
         points += 5;
