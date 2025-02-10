@@ -58,7 +58,7 @@ export async function approvedSubmit(submitid) {
     let newPoints = await getPoints(user);
 
     console.log(
-      `Added ${points} points to user ${member.user.tag}. New total: ${newPoints}`
+      `Added ${points} points to user ${user}. New total: ${newPoints}`
     );
   } catch (error) {
     console.error("Error submitting approval:", error);
