@@ -2,13 +2,19 @@ import { User } from "../models/User.js";
 
 export async function addPoints(username, points) {
   try {
-    let user = await User.findOne({ where: { username } });
-    if (!user) {
-      throw new Error("User not found");
-    } else {
-      user.points += points;
-      await user.save();
+    if (!username || points == null) {
+      throw new Error("Invalid username or points");
     }
+
+    let user = await User.findOne({
+      where: { username: username.toLowerCase() },
+    });
+    if (!user) {
+      throw new Error(`User not found: ${username}`);
+    }
+
+    user.points += points;
+    await user.save();
     return user.points;
   } catch (error) {
     console.error("Error adding points:", error);
@@ -18,10 +24,17 @@ export async function addPoints(username, points) {
 
 export async function removePoints(username, points) {
   try {
-    let user = await User.findOne({ where: { username } });
-    if (!user) {
-      throw new Error("User not found");
+    if (!username || points == null) {
+      throw new Error("Invalid username or points");
     }
+
+    let user = await User.findOne({
+      where: { username: username.toLowerCase() },
+    });
+    if (!user) {
+      throw new Error(`User not found: ${username}`);
+    }
+
     user.points = Math.max(0, user.points - points);
     await user.save();
     return user.points;
@@ -33,10 +46,17 @@ export async function removePoints(username, points) {
 
 export async function getPoints(username) {
   try {
-    const user = await User.findOne({ where: { username } });
-    if (!user) {
-      throw new Error("User not found");
+    if (!username) {
+      throw new Error("Invalid username");
     }
+
+    const user = await User.findOne({
+      where: { username: username.toLowerCase() },
+    });
+    if (!user) {
+      throw new Error(`User not found: ${username}`);
+    }
+
     return user.points;
   } catch (error) {
     console.error("Error getting points:", error);

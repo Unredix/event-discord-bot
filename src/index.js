@@ -6,6 +6,7 @@ import { functionstart } from "./startfunction.js";
 import { approvedSubmit, declinedSubmit } from "./approveHandler.js";
 import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
 import { Submits } from "../models/Submits.js";
+import { refreshLeaderboard } from "./leaderboardRefresh.js";
 
 const {
   Client,
@@ -49,6 +50,22 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+client.on("ready", async () => {
+  const guild = client.guilds.cache.get(process.env.GUILD_ID);
+  const channelId = process.env.LEADERBOARD_CHANNEL_ID;
+  if (guild && channelId) {
+    const targetChannel = guild.channels.cache.get(channelId);
+    if (targetChannel) {
+      const messages = await targetChannel.messages.fetch({ limit: 1 });
+      if (messages.size > 0) {
+        await messages.first().delete();
+      }
+    }
+    await refreshLeaderboard(guild, channelId);
+    setInterval(() => refreshLeaderboard(guild, channelId), 30000);
+  }
+});
+
 client.on("interactionCreate", async (interaction) => {
   console.log(`Interaction received: ${interaction.type}`);
 
@@ -74,23 +91,23 @@ client.on("interactionCreate", async (interaction) => {
       });
 
       const row = new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-              .setCustomId(`approved_${submitId}`) // Attach submitId
-              .setLabel("Approved")
-              .setStyle(ButtonStyle.Success)
-              .setEmoji("✅"),
+        new ButtonBuilder()
+          .setCustomId(`approved_${submitId}`) // Attach submitId
+          .setLabel("Approved")
+          .setStyle(ButtonStyle.Success)
+          .setEmoji("✅"),
 
-          new ButtonBuilder()
-              .setCustomId(`not_approved_${submitId}`) // Attach submitId
-              .setLabel("Not Approved")
-              .setStyle(ButtonStyle.Danger)
-              .setEmoji("✖️"),
+        new ButtonBuilder()
+          .setCustomId(`not_approved_${submitId}`) // Attach submitId
+          .setLabel("Not Approved")
+          .setStyle(ButtonStyle.Danger)
+          .setEmoji("✖️"),
 
-          new ButtonBuilder()
-              .setCustomId(`other_${submitId}`)
-              .setLabel("Other")
-              .setStyle(ButtonStyle.Secondary)
-              .setEmoji("❓")
+        new ButtonBuilder()
+          .setCustomId(`other_${submitId}`)
+          .setLabel("Other")
+          .setStyle(ButtonStyle.Secondary)
+          .setEmoji("❓")
       );
 
       const embed = new EmbedBuilder()
@@ -237,13 +254,13 @@ client.on("interactionCreate", async (interaction) => {
     const [action, submitId] = interaction.customId.split("_");
 
     if (action === "approved") {
-      await approvedSubmit(submitId);
+      await approvedSubmit(submitId, interaction.guild);
       await interaction.reply({
         content: `Submission **${submitId}** has been approved!`,
         ephemeral: true,
       });
     } else if (action === "not") {
-      await declinedSubmit(submitId);
+      await declinedSubmit(submitId, interaction.guild);
       await interaction.reply({
         content: `Submission **${submitId}** was not approved!`,
         ephemeral: true,
