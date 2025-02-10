@@ -1,10 +1,10 @@
 import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
 import { User } from "../models/User.js";
+import { Submits } from "../models/Submits.js";
 
 let points = 0;
-let declined_number = 0;
 
-export async function approvedSubmit(user) {
+export async function approvedSubmit(username) {
   try {
     let roles = {
       lvl1: "1336726820221095936",
@@ -15,19 +15,24 @@ export async function approvedSubmit(user) {
       lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
     };
 
-    const existingUser = await User.findOne({ where: { user } });
+    const existingUser = await Submits.findOne({ where: { username } });
+    let declined_number = await User.findOne({ where: { username } })
+      .declined_number;
 
     if (existingUser) {
       for (let i = 1; i <= 5; i++) {
-        if (user.roles.cache.has(roles[`lvl${i}`])) {
-          await user.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
-          await user.roles.remove(roles[`lvl${i}`]).catch(console.error);
-          User.level = `lvl${i + 1}`
+        if (existingUser.roles.cache.has(roles[`lvl${i}`])) {
+          await existingUser.roles
+            .add(roles[`lvl${i + 1}`])
+            .catch(console.error);
+          await existingUser.roles
+            .remove(roles[`lvl${i}`])
+            .catch(console.error);
+          existingUser.level = `lvl${i + 1}`;
           break;
         }
       }
-    }
-    else {
+    } else {
       console.error(`User couldn't be found`);
     }
 
@@ -51,20 +56,20 @@ export async function approvedSubmit(user) {
         points += 0;
     }
 
-    await addPoints(user.tag, points);
-    let newPoints = await getPoints(user.tag);
+    await addPoints(member.user.tag, points);
+    let newPoints = await getPoints(member.user.tag);
 
     declined_number = 0;
 
     console.log(
-      `Added ${points} points to user ${user.tag}. New total: ${newPoints}`
+      `Added ${points} points to user ${member.user.tag}. New total: ${newPoints}`
     );
   } catch (error) {
     console.error("Error submitting approval:", error);
   }
 }
 
-export async function declinedSubmit(user) {
+export async function declinedSubmit(username) {
   try {
     declined_number += 1;
   } catch (error) {

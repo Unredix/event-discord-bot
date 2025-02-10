@@ -18,13 +18,21 @@ const {
 
 dotenv.config();
 
-function generate() {
-  const timestamp = Date.now().toString(36);
-  const randomPart = Math.random().toString(36)
-  const counterPart = (this.counter++).toString(36).padStart(2, "0");
+class IDGenerator {
+  constructor() {
+    this.counter = 0;
+  }
 
-  return `${timestamp}${randomPart}${counterPart}`;
+  generate() {
+    const timestamp = Date.now().toString(36);
+    const randomPart = Math.random().toString(36).substring(2, 8);
+    const counterPart = (this.counter++).toString(36).padStart(2, "0");
+
+    return `${timestamp}${randomPart}${counterPart}`;
+  }
 }
+
+const idGenerator = new IDGenerator();
 
 const client = new Client({
   intents: [
@@ -42,6 +50,8 @@ client.on("ready", () => {
 });
 
 client.on("interactionCreate", async (interaction) => {
+  console.log(`Interaction received: ${interaction.type}`);
+
   if (interaction.isChatInputCommand()) {
     const roleId = `${process.env.PARTICIPANT_ROLE_ID}`;
 
@@ -55,11 +65,12 @@ client.on("interactionCreate", async (interaction) => {
 
       const attachment = interaction.options.getAttachment("attachment");
       const submitter = interaction.user;
+      const submitId = idGenerator.generate();
 
       await Submits.create({
-        SUBMIT_ID: generate(),
+        SUBMIT_ID: submitId,
         username: submitter.tag,
-        approval: "undecided"
+        approval: "undecided",
       });
 
       const row = new ActionRowBuilder().addComponents(
@@ -89,10 +100,10 @@ client.on("interactionCreate", async (interaction) => {
           { name: "Submitted by", value: `${submitter.tag}`, inline: true },
           {
             name: "Submitted in",
-            value: `${interaction.channel.name}`,
+            value: `${interaction.channel?.name || "Unknown"}`,
             inline: true,
           },
-            { name: "Submit ID", value: Submits.SUBMIT_ID, inline: false },
+          { name: "Submit ID", value: submitId, inline: false },
           { name: "Status", value: "Pending approval", inline: false },
           { name: "Points", value: "not yet known", inline: true },
           { name: "Time of submission", value: "0", inline: true }
@@ -224,13 +235,13 @@ client.on("interactionCreate", async (interaction) => {
     console.log(`Button interaction received: ${interaction.customId}`);
 
     if (interaction.customId === "approved") {
-      await approvedSubmit(interaction.member);
+      await approvedSubmit(interaction.user.tag);
       await interaction.reply({
         content: "You clicked Approved!",
         ephemeral: true,
       });
     } else if (interaction.customId === "not_approved") {
-      await declinedSubmit(interaction.member);
+      await declinedSubmit(interaction.user.tag);
       await interaction.reply({
         content: "You clicked Not Approved!",
         ephemeral: true,
