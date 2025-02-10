@@ -25,6 +25,10 @@ const User = sequelize.define(
     level: {
         type: DataTypes.INTEGER,
         allowNull: false,
+    },
+    declined_number: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
     }
   },
   {

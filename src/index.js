@@ -5,6 +5,7 @@ import { registerUser, unregisterUser } from "../models/registerHandler.js";
 import { functionstart } from "./startfunction.js";
 import { approvedSubmit, declinedSubmit } from "./approveHandler.js";
 import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
+import { Submits } from "../models/Submits.js";
 
 const {
   Client,
@@ -16,6 +17,14 @@ const {
 } = pkg;
 
 dotenv.config();
+
+function generate() {
+  const timestamp = Date.now().toString(36);
+  const randomPart = Math.random().toString(36)
+  const counterPart = (this.counter++).toString(36).padStart(2, "0");
+
+  return `${timestamp}${randomPart}${counterPart}`;
+}
 
 const client = new Client({
   intents: [
@@ -47,6 +56,12 @@ client.on("interactionCreate", async (interaction) => {
       const attachment = interaction.options.getAttachment("attachment");
       const submitter = interaction.user;
 
+      await Submits.create({
+        SUBMIT_ID: generate(),
+        username: submitter.tag,
+        approval: "undecided"
+      });
+
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId("approved")
@@ -77,6 +92,7 @@ client.on("interactionCreate", async (interaction) => {
             value: `${interaction.channel.name}`,
             inline: true,
           },
+            { name: "Submit ID", value: Submits.SUBMIT_ID, inline: false },
           { name: "Status", value: "Pending approval", inline: false },
           { name: "Points", value: "not yet known", inline: true },
           { name: "Time of submission", value: "0", inline: true }

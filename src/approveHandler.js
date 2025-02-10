@@ -15,7 +15,7 @@ export async function approvedSubmit(user) {
       lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
     };
 
-    const existingUser = await User.findOne({ where: { username } });
+    const existingUser = await User.findOne({ where: { user } });
 
     if (existingUser) {
       for (let i = 1; i <= 5; i++) {
