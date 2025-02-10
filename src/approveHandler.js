@@ -2,9 +2,7 @@ import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
 import { User } from "../models/User.js";
 import { Submits } from "../models/Submits.js";
 
-let points = 0;
-
-export async function approvedSubmit(submitid) {
+export async function approvedSubmit(submitid, guild) {
   try {
     let roles = {
       lvl1: "1336726820221095936",
@@ -12,71 +10,52 @@ export async function approvedSubmit(submitid) {
       lvl3: "1336727394492612648",
       lvl4: "1336727438553780234",
       lvl5: "1336727514869006447",
-      lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
+      lvl6: "1338135228107067423", // Labeled as lvl6 but it's the winners role
     };
 
-    const user = await Submits.findOne({ where: { submitid } }).username;
-    let declined_number = await User.findOne({ where: { user } }).declined_number;
+    const submission = await Submits.findOne({ where: { SUBMIT_ID: submitid } });
+    const username = submission.username;
+    const userRecord = await User.findOne({ where: { username } });
+    let declined_number = userRecord.declined_number;
+    const member = guild.members.cache.find(m => m.user.tag === username);
 
-    if (user) {
-      for (let i = 1; i <= 5; i++) {
-        if (user.roles.cache.has(roles[`lvl${i}`])) {
-          user.roles
-              .add(roles[`lvl${i + 1}`])
-              .catch(console.error);
-          user.roles
-              .remove(roles[`lvl${i}`])
-              .catch(console.error);
-          break;
-        }
+    for (let i = 1; i <= 5; i++) {
+      if (member.roles.cache.has(roles[`lvl${i}`])) {
+        await member.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
+        await member.roles.remove(roles[`lvl${i}`]).catch(console.error);
+        break;
       }
-    } else {
-      console.error(`The user couldn't be found`);
     }
 
-    switch (declined_number) {
-      case 0:
-        points += 5;
-        break;
-      case 1:
-        points += 4;
-        break;
-      case 2:
-        points += 3;
-        break;
-      case 3:
-        points += 2;
-        break;
-      case 4:
-        points += 1;
-        break;
-      default:
-        points += 0;
-    }
+    let points = [5, 4, 3, 2, 1, 0][Math.min(declined_number, 5)];
 
-    await addPoints(user, points);
-    let newPoints = await getPoints(user);
+    await addPoints(username, points);
+    let newPoints = await getPoints(username);
 
     console.log(
-      `Added ${points} points to user ${user}. New total: ${newPoints}`
+        `Added ${points} points to user ${username}. New total: ${newPoints}`
     );
   } catch (error) {
-    console.error("Error submitting approval:", error);
+    console.error("Error approving submission:", error);
   }
 }
 
 export async function declinedSubmit(submitid) {
   try {
-    const Submituser = await Submits.findOne({ where: { submitid } }).username;
+    const submission = await Submits.findOne({ where: { SUBMIT_ID: submitid } });
+    const username = submission.username;
+    const userRecord = await User.findOne({ where: { username } });
 
-    if (Submituser) {
-      Submituser.declined_number += 1;
-      await Submituser.save();
+    if (!userRecord) {
+      console.error(`User ${username} not found in database.`);
+      return;
     }
-    else {
-      console.error(`The user couldn't be found`);
-    }
+
+    userRecord.declined_number += 1;
+    await userRecord.save();
+
+    console.log(`Updated declined_number for ${username}`);
   } catch (error) {
-    console.error("Error submitting decline:", error);
+    console.error("Error declining submission:", error);
   }
 }
