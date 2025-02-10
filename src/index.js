@@ -67,6 +67,10 @@ client.on("interactionCreate", async (interaction) => {
       const submitter = interaction.user;
       const submitId = idGenerator.generate();
 
+      function SubmitID() {
+        return submitId
+      }
+
       await Submits.create({
         SUBMIT_ID: submitId,
         username: submitter.tag,
@@ -235,7 +239,7 @@ client.on("interactionCreate", async (interaction) => {
     console.log(`Button interaction received: ${interaction.customId}`);
 
     if (interaction.customId === "approved") {
-      await approvedSubmit(interaction.user.tag);
+      await approvedSubmit(SubmitID());
       await interaction.reply({
         content: "You clicked Approved!",
         ephemeral: true,

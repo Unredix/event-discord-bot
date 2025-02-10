@@ -4,7 +4,7 @@ import { Submits } from "../models/Submits.js";
 
 let points = 0;
 
-export async function approvedSubmit(username) {
+export async function approvedSubmit(submitid) {
   try {
     let roles = {
       lvl1: "1336726820221095936",
@@ -15,25 +15,23 @@ export async function approvedSubmit(username) {
       lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
     };
 
-    const existingUser = await Submits.findOne({ where: { username } });
-    let declined_number = await User.findOne({ where: { username } })
-      .declined_number;
+    const user = await Submits.findOne({ where: { submitid } }).username;
+    let declined_number = await User.findOne({ where: { user } }).declined_number;
 
-    if (existingUser) {
+    if (user) {
       for (let i = 1; i <= 5; i++) {
-        if (existingUser.roles.cache.has(roles[`lvl${i}`])) {
-          await existingUser.roles
-            .add(roles[`lvl${i + 1}`])
-            .catch(console.error);
-          await existingUser.roles
-            .remove(roles[`lvl${i}`])
-            .catch(console.error);
-          existingUser.level = `lvl${i + 1}`;
+        if (user.roles.cache.has(roles[`lvl${i}`])) {
+          user.roles
+              .add(roles[`lvl${i + 1}`])
+              .catch(console.error);
+          user.roles
+              .remove(roles[`lvl${i}`])
+              .catch(console.error);
           break;
         }
       }
     } else {
-      console.error(`User couldn't be found`);
+      console.error(`The user couldn't be found`);
     }
 
     switch (declined_number) {
@@ -56,10 +54,8 @@ export async function approvedSubmit(username) {
         points += 0;
     }
 
-    await addPoints(member.user.tag, points);
-    let newPoints = await getPoints(member.user.tag);
-
-    declined_number = 0;
+    await addPoints(user, points);
+    let newPoints = await getPoints(user);
 
     console.log(
       `Added ${points} points to user ${member.user.tag}. New total: ${newPoints}`
@@ -69,9 +65,17 @@ export async function approvedSubmit(username) {
   }
 }
 
-export async function declinedSubmit(username) {
+export async function declinedSubmit(submitid) {
   try {
-    declined_number += 1;
+    const Submituser = await Submits.findOne({ where: { submitid } }).username;
+
+    if (Submituser) {
+      Submituser.declined_number += 1;
+      await Submituser.save();
+    }
+    else {
+      console.error(`The user couldn't be found`);
+    }
   } catch (error) {
     console.error("Error submitting decline:", error);
   }
