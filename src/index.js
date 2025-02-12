@@ -1,12 +1,20 @@
 import dotenv from "dotenv";
 import pkg from "discord.js";
 import { PermissionsBitField } from "discord.js";
-import { registerUser, unregisterUser } from "../models/registerHandler.js";
+import {
+  registerUser,
+  unregisterUser,
+  forceRegisterUser,
+} from "../models/registerHandler.js";
 import { functionstart } from "./startfunction.js";
 import { approvedSubmit, declinedSubmit } from "./approveHandler.js";
 import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
 import { Submits } from "../models/Submits.js";
-import { refreshLeaderboard } from "./leaderboardRefresh.js";
+import {
+  refreshLeaderboardMain,
+  refreshLeaderboardA1,
+  refreshLeaderboardA2,
+} from "./leaderboardRefresh.js";
 
 const {
   Client,
@@ -56,13 +64,17 @@ client.on("ready", async () => {
   if (guild && channelId) {
     const targetChannel = guild.channels.cache.get(channelId);
     if (targetChannel) {
-      const messages = await targetChannel.messages.fetch({ limit: 1 });
+      const messages = await targetChannel.messages.fetch({ limit: 3 });
       if (messages.size > 0) {
-        await messages.first().delete();
+        await messages.forEach((message) => message.delete());
       }
     }
-    await refreshLeaderboard(guild, channelId);
-    setInterval(() => refreshLeaderboard(guild, channelId), 30000);
+    await refreshLeaderboardMain(guild, channelId);
+    await refreshLeaderboardA1(guild, channelId);
+    await refreshLeaderboardA2(guild, channelId);
+    setInterval(() => refreshLeaderboardMain(guild, channelId), 30000);
+    setInterval(() => refreshLeaderboardA1(guild, channelId), 30000);
+    setInterval(() => refreshLeaderboardA2(guild, channelId), 30000);
   }
 });
 
@@ -296,6 +308,28 @@ client.on("interactionCreate", async (interaction) => {
 
       interaction.member.roles.remove(process.env.PARTICIPANT_ROLE_ID);
 
+      break;
+    case "forceregister":
+      if (
+        !interaction.member.permissions.has(
+          PermissionsBitField.Flags.Administrator
+        )
+      ) {
+        return interaction.reply({
+          content: "Nincs jogosultságod ehhez a parancshoz!",
+          ephemeral: true,
+        });
+      } else {
+        const target = interaction.options.getUser("user");
+        const group = interaction.options.getString("group");
+
+        await forceRegisterUser(target.tag, group);
+
+        interaction.reply({
+          content: `Nézd meg a console-t több információért!`,
+          ephemeral: true,
+        });
+      }
       break;
   }
 });

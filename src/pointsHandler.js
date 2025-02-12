@@ -1,24 +1,26 @@
-import { User } from "../models/User.js";
+import { User } from "../models/User.js"; // Adjust the import path as necessary
 
 export async function addPoints(username, points) {
   try {
-    if (!username || points == null) {
-      throw new Error("Invalid username or points");
-    }
+    const user = await User.findOne(
+      { where: { username } },
+      { attributes: ["ROWID", "username", "points"] }
+    );
+    console.log(`Fetching user: ${user}`);
 
-    let user = await User.findOne({
-      where: { username: username.toLowerCase() },
-    });
     if (!user) {
-      throw new Error(`User not found: ${username}`);
+      console.error(`${username} nem található.`);
+      return;
     }
 
-    user.points += points;
+    user.points = (user.points || 0) + points;
     await user.save();
-    return user.points;
+
+    console.log(
+      `${points} hozzáadva ${username}-nak/nek. Új pontszám: ${user.points}`
+    );
   } catch (error) {
     console.error("Error adding points:", error);
-    throw error;
   }
 }
 
@@ -29,7 +31,7 @@ export async function removePoints(username, points) {
     }
 
     let user = await User.findOne({
-      where: { username: username.toLowerCase() },
+      where: { username },
     });
     if (!user) {
       throw new Error(`User not found: ${username}`);
@@ -51,7 +53,7 @@ export async function getPoints(username) {
     }
 
     const user = await User.findOne({
-      where: { username: username.toLowerCase() },
+      where: { username },
     });
     if (!user) {
       throw new Error(`User not found: ${username}`);

@@ -17,15 +17,16 @@ const User = sequelize.define(
     points: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: 0,
     },
     group: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     declined_number: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    }
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   {
     tableName: "users", // Match your actual table name

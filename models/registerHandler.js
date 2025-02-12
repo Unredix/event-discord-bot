@@ -20,7 +20,7 @@ export async function registerUser(interaction) {
       username: username,
       points: 0,
       group: group,
-      declined_number: 0
+      declined_number: 0,
     });
 
     await interaction.reply({
@@ -66,5 +66,28 @@ export async function unregisterUser(interaction) {
       content: "Hiba merült fel a törlés során! (Szolj egy Rendezőnek)",
       ephemeral: true,
     });
+  }
+}
+
+export async function forceRegisterUser(username, group) {
+  try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
+      console.log("User already exists:", username);
+      return;
+    }
+
+    // Create new user
+    await User.create({
+      username: username,
+      points: 0,
+      group: group,
+      declined_number: 0,
+    });
+
+    console.log(`User force registered: ${username}`);
+  } catch (error) {
+    console.error("Error registering user:", error);
   }
 }
