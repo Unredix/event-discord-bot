@@ -30,6 +30,7 @@ dotenv.config();
 class IDGenerator {
   constructor() {
     this.counter = 0;
+    this.submitId = "";
   }
 
   generate() {
@@ -37,11 +38,13 @@ class IDGenerator {
     const randomPart = Math.random().toString(36).substring(2, 8);
     const counterPart = (this.counter++).toString(36).padStart(2, "0");
 
-    return `${timestamp}${randomPart}${counterPart}`;
+    this.submitId = `${timestamp}${randomPart}${counterPart}`;
+    return this.submitId;
   }
 }
 
 const idGenerator = new IDGenerator();
+const submitId = idGenerator.generate();
 
 const client = new Client({
   intents: [
@@ -69,12 +72,12 @@ client.on("ready", async () => {
         await messages.forEach((message) => message.delete());
       }
     }
-    await refreshLeaderboardMain(guild, channelId);
-    await refreshLeaderboardA1(guild, channelId);
-    await refreshLeaderboardA2(guild, channelId);
-    setInterval(() => refreshLeaderboardMain(guild, channelId), 30000);
-    setInterval(() => refreshLeaderboardA1(guild, channelId), 30000);
-    setInterval(() => refreshLeaderboardA2(guild, channelId), 30000);
+    //   await refreshLeaderboardMain(guild, channelId);
+    //   await refreshLeaderboardA1(guild, channelId);
+    //   await refreshLeaderboardA2(guild, channelId);
+    //   setInterval(() => refreshLeaderboardMain(guild, channelId), 30000);
+    //   setInterval(() => refreshLeaderboardA1(guild, channelId), 30000);
+    //   setInterval(() => refreshLeaderboardA2(guild, channelId), 30000);
   }
 });
 
@@ -94,7 +97,6 @@ client.on("interactionCreate", async (interaction) => {
 
       const attachment = interaction.options.getAttachment("attachment");
       const submitter = interaction.user;
-      const submitId = idGenerator.generate();
 
       await Submits.create({
         SUBMIT_ID: submitId,
@@ -103,20 +105,38 @@ client.on("interactionCreate", async (interaction) => {
       });
 
       const row = new ActionRowBuilder().addComponents(
+        //   new ButtonBuilder()
+        //     .setCustomId(`approved_${submitId}`) // Attach submitId
+        //     .setLabel("Approved")
+        //     .setStyle(ButtonStyle.Success)
+        //     .setEmoji("✅"),
+
+        //   new ButtonBuilder()
+        //     .setCustomId(`not_approved_${submitId}`) // Attach submitId
+        //     .setLabel("Not Approved")
+        //     .setStyle(ButtonStyle.Danger)
+        //     .setEmoji("✖️"),
+
+        //   new ButtonBuilder()
+        //     .setCustomId(`other_${submitId}`)
+        //     .setLabel("Other")
+        //     .setStyle(ButtonStyle.Secondary)
+        //     .setEmoji("❓")
+        // );
         new ButtonBuilder()
-          .setCustomId(`approved_${submitId}`) // Attach submitId
+          .setCustomId(`approved`)
           .setLabel("Approved")
           .setStyle(ButtonStyle.Success)
           .setEmoji("✅"),
 
         new ButtonBuilder()
-          .setCustomId(`not_approved_${submitId}`) // Attach submitId
+          .setCustomId(`not_approved`)
           .setLabel("Not Approved")
           .setStyle(ButtonStyle.Danger)
           .setEmoji("✖️"),
 
         new ButtonBuilder()
-          .setCustomId(`other_${submitId}`)
+          .setCustomId(`other`)
           .setLabel("Other")
           .setStyle(ButtonStyle.Secondary)
           .setEmoji("❓")
@@ -263,21 +283,41 @@ client.on("interactionCreate", async (interaction) => {
   } else if (interaction.isButton()) {
     console.log(`Button interaction received: ${interaction.customId}`);
 
-    const [action, submitId] = interaction.customId.split("_");
+    // const [action, submitId] = interaction.customId.split("_");
 
-    if (action === "approved") {
-      await approvedSubmit(submitId, interaction.guild);
+    // if (action === "approved") {
+    //   await approvedSubmit(submitId, interaction.guild);
+    //   await interaction.reply({
+    //     content: `Submission **${submitId}** has been approved!`,
+    //     ephemeral: true,
+    //   });
+    // } else if (action === "not") {
+    //   console.log(submitId);
+    //   await declinedSubmit(submitId, interaction.guild);
+    //   await interaction.reply({
+    //     content: `Submission **${submitId}** was not approved!`,
+    //     ephemeral: true,
+    //   });
+    // } else if (action === "other") {
+    //   await interaction.reply({
+    //     content: "You clicked Other!",
+    //     ephemeral: true,
+    //   });
+    // }
+
+    if (interaction.customId === "approved") {
+      approvedSubmit(submitId, interaction.guild);
       await interaction.reply({
-        content: `Submission **${submitId}** has been approved!`,
+        content: `Submission has been approved!`,
         ephemeral: true,
       });
-    } else if (action === "not") {
-      await declinedSubmit(submitId, interaction.guild);
+    } else if (interaction.customId === "not_approved") {
+      declinedSubmit(submitId);
       await interaction.reply({
-        content: `Submission **${submitId}** was not approved!`,
+        content: `Submission was not approved!`,
         ephemeral: true,
       });
-    } else if (action === "other") {
+    } else if (interaction.customId === "other") {
       await interaction.reply({
         content: "You clicked Other!",
         ephemeral: true,
