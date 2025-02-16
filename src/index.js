@@ -311,14 +311,17 @@ client.on("interactionCreate", async (interaction) => {
     //   });
     // }
 
+    // TODO: Editelni kéne valahogy a embedet scopon kívül...
+
     if (interaction.customId === "approved") {
       approvedSubmit(submitId, interaction.guild);
+      interaction;
       await interaction.reply({
         content: `Submission has been approved!`,
         ephemeral: true,
       });
     } else if (interaction.customId === "not_approved") {
-      declinedSubmit(submitId);
+      declinedSubmit(submitId, interaction.guild);
       await interaction.reply({
         content: `Submission was not approved!`,
         ephemeral: true,

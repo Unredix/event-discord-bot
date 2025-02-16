@@ -13,7 +13,7 @@ export async function functionstart(interaction, targetRoleId, newRoleId) {
         member.roles.cache.has(targetRoleId) &&
         !member.roles.cache.has(newRoleId)
       ) {
-        // await member.roles.add(newRoleId).catch(console.error);
+        await member.roles.add(newRoleId).catch(console.error);
         console.log("Timer started to: ", member.user.tag);
         await startTimer(member.user.tag, 100000, () => {
           console.log("Timer ended!");

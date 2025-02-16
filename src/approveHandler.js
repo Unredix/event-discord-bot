@@ -1,7 +1,7 @@
 import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
 import { User } from "../models/User.js";
 import { Submits } from "../models/Submits.js";
-import {pauseTimer, resumeTimer} from "./timeHandler.js";
+import { pauseTimer, resumeTimer } from "./timeHandler.js";
 
 export async function approvedSubmit(submitId, guild) {
   try {
@@ -43,11 +43,14 @@ export async function approvedSubmit(submitId, guild) {
       { where: { SUBMIT_ID: submitId } }
     );
 
-    if (username.roles.cache.has(roles[`lvl5`])) {
+    if (member.roles.cache.has(roles[`lvl6`])) {
       resumeTimer(username, () => {
         console.log("Timer resumed!");
       });
-      await addPoints(username, Math.floor((3600000 - (3600000 - pauseTimer(username))) / 50000));
+      await addPoints(
+        username,
+        Math.floor((3600000 - (3600000 - pauseTimer(username))) / 50000)
+      );
     }
 
     resumeTimer(username, () => {
@@ -60,18 +63,29 @@ export async function approvedSubmit(submitId, guild) {
   }
 }
 
-export async function declinedSubmit(submitId) {
+export async function declinedSubmit(submitId, guild) {
   try {
     const submission = await Submits.findOne({
-      attributes: ["ROWID", "SUBMIT_ID", "username"],
       where: { SUBMIT_ID: submitId },
     });
+
     if (!submission) {
       console.error(`Submission with ID ${submitId} not found.`);
       return;
     }
+
     const username = submission.username;
     const userRecord = await User.findOne({ where: { username } });
+    const member = guild.members.cache.find((m) => m.user.tag === username);
+
+    let roles = {
+      lvl1: "1336726820221095936",
+      lvl2: "1336726882472820747",
+      lvl3: "1336727394492612648",
+      lvl4: "1336727438553780234",
+      lvl5: "1336727514869006447",
+      lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
+    };
 
     if (!userRecord) {
       console.error(`User ${username} not found in database.`);
@@ -83,10 +97,21 @@ export async function declinedSubmit(submitId) {
       { where: { SUBMIT_ID: submitId } }
     );
 
-    await User.update(
-      { declined_number: userRecord.declined_number + 1 },
-      { where: { username } }
-    );
+    if (userRecord.declined_number == 5) {
+      await User.update({ declined_number: 0 }, { where: { username } });
+      for (let i = 1; i <= 5; i++) {
+        if (member.roles.cache.has(roles[`lvl${i}`])) {
+          await member.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
+          await member.roles.remove(roles[`lvl${i}`]).catch(console.error);
+          break;
+        }
+      }
+    } else {
+      await User.update(
+        { declined_number: userRecord.declined_number + 1 },
+        { where: { username } }
+      );
+    }
 
     setTimeout(() => {
       resumeTimer(username, () => {
