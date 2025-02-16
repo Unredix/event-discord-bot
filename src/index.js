@@ -16,7 +16,7 @@ import {
   refreshLeaderboardA1,
   refreshLeaderboardA2,
 } from "./leaderboardRefresh.js";
-import {pauseTimer} from "./timeHandler.js";
+import { pauseTimer } from "./timeHandler.js";
 
 const {
   Client,
@@ -106,9 +106,9 @@ client.on("interactionCreate", async (interaction) => {
         approval: "undecided",
       });
 
-      setTimeout(() => {
-        pauseTimer(submitter);
-      }, 5000);
+      console.log(`Submission received from ${submitter.tag}`);
+
+      pauseTimer(submitter.tag);
 
       const row = new ActionRowBuilder().addComponents(
         //   new ButtonBuilder()
@@ -219,8 +219,6 @@ client.on("interactionCreate", async (interaction) => {
       const NEW_ROLE_ID = "1336726820221095936";
 
       await functionstart(interaction, TARGET_ROLE_ID, NEW_ROLE_ID);
-
-      await interaction.reply({ content: "Event elindítva!", ephemeral: true });
     } else if (interaction.commandName === "addpoints") {
       if (
         !interaction.member.permissions.has(
