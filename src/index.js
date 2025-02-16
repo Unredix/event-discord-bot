@@ -16,12 +16,6 @@ import {
   refreshLeaderboardA1,
   refreshLeaderboardA2,
 } from "./leaderboardRefresh.js";
-import {
-  startTimer,
-  stopTimer,
-  pauseTimer,
-  resumeTimer,
-} from "./timeHandler.js";
 
 const {
   Client,
@@ -216,21 +210,10 @@ client.on("interactionCreate", async (interaction) => {
         });
       }
 
-      // const TARGET_ROLE_ID = "1336742482720985239";
-      // const NEW_ROLE_ID = "1336726820221095936";
+      const TARGET_ROLE_ID = "1336742482720985239";
+      const NEW_ROLE_ID = "1336726820221095936";
 
-      // await functionstart(interaction, TARGET_ROLE_ID, NEW_ROLE_ID);
-      await startTimer("Unredix", 10000, () => {
-        console.log("Timer ended!");
-      });
-      setTimeout(() => {
-        pauseTimer("Unredix");
-      }, 5000);
-      setTimeout(() => {
-        resumeTimer("Unredix", () => {
-          console.log("Timer resumed!");
-        });
-      }, 10000);
+      await functionstart(interaction, TARGET_ROLE_ID, NEW_ROLE_ID);
 
       await interaction.reply({ content: "Event elindítva!", ephemeral: true });
     } else if (interaction.commandName === "addpoints") {

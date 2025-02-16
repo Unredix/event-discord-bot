@@ -1,3 +1,5 @@
+import {pauseTimer, resumeTimer, startTimer} from "./timeHandler.js";
+
 export async function functionstart(interaction, targetRoleId, newRoleId) {
   try {
     // Defer the reply to give more time for processing
@@ -12,6 +14,17 @@ export async function functionstart(interaction, targetRoleId, newRoleId) {
         !member.roles.cache.has(newRoleId)
       ) {
         await member.roles.add(newRoleId).catch(console.error);
+        await startTimer(member, 10000, () => {
+          console.log("Timer ended!");
+        });
+        setTimeout(() => {
+          pauseTimer(member);
+        }, 5000);
+        setTimeout(() => {
+          resumeTimer(member, () => {
+            console.log("Timer resumed!");
+          });
+        }, 10000);
       }
     }
 
