@@ -1,7 +1,7 @@
 import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
 import { User } from "../models/User.js";
 import { Submits } from "../models/Submits.js";
-import { resumeTimer } from "./timeHandler.js";
+import {pauseTimer, resumeTimer} from "./timeHandler.js";
 
 export async function approvedSubmit(submitId, guild) {
   try {
@@ -42,6 +42,13 @@ export async function approvedSubmit(submitId, guild) {
       { approval: "Approved" },
       { where: { SUBMIT_ID: submitId } }
     );
+
+    if (username.roles.cache.has(roles[`lvl5`])) {
+      resumeTimer(username, () => {
+        console.log("Timer resumed!");
+      });
+      await addPoints(username, Math.floor((3600000 - (3600000 - pauseTimer(username))) / 50000));
+    }
 
     resumeTimer(username, () => {
       console.log("Timer resumed!");

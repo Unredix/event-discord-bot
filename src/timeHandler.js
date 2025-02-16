@@ -68,6 +68,7 @@ export function pauseTimer(username) {
     channel.send(
       `Időzítő szüneteltetve ${username} számára. Ennyi ideje maradt hátra: ${remainingTime}ms`
     );
+    return remainingTime;
   } else {
     console.error(`No timer found for ${username}`);
   }
