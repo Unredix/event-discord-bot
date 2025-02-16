@@ -1,4 +1,4 @@
-import {pauseTimer, resumeTimer, startTimer} from "./timeHandler.js";
+import {startTimer} from "./timeHandler.js";
 
 export async function functionstart(interaction, targetRoleId, newRoleId) {
   try {
@@ -17,14 +17,6 @@ export async function functionstart(interaction, targetRoleId, newRoleId) {
         await startTimer(member, 10000, () => {
           console.log("Timer ended!");
         });
-        setTimeout(() => {
-          pauseTimer(member);
-        }, 5000);
-        setTimeout(() => {
-          resumeTimer(member, () => {
-            console.log("Timer resumed!");
-          });
-        }, 10000);
       }
     }
 

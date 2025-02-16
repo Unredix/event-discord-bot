@@ -16,6 +16,7 @@ import {
   refreshLeaderboardA1,
   refreshLeaderboardA2,
 } from "./leaderboardRefresh.js";
+import {pauseTimer} from "./timeHandler.js";
 
 const {
   Client,
@@ -104,6 +105,10 @@ client.on("interactionCreate", async (interaction) => {
         username: submitter.tag,
         approval: "undecided",
       });
+
+      setTimeout(() => {
+        pauseTimer(submitter);
+      }, 5000);
 
       const row = new ActionRowBuilder().addComponents(
         //   new ButtonBuilder()

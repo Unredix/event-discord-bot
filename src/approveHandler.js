@@ -1,6 +1,7 @@
 import { addPoints, removePoints, getPoints } from "./pointsHandler.js";
 import { User } from "../models/User.js";
 import { Submits } from "../models/Submits.js";
+import {resumeTimer} from "./timeHandler.js";
 
 export async function approvedSubmit(submitId, guild) {
   try {
@@ -42,6 +43,12 @@ export async function approvedSubmit(submitId, guild) {
       { where: { SUBMIT_ID: submitId } }
     );
 
+    setTimeout(() => {
+      resumeTimer(username, () => {
+        console.log("Timer resumed!");
+      });
+    }, 10000);
+
     await addPoints(username, points);
     let newPoints = await getPoints(username);
   } catch (error) {
@@ -76,6 +83,12 @@ export async function declinedSubmit(submitId) {
       { declined_number: userRecord.declined_number + 1 },
       { where: { username } }
     );
+
+    setTimeout(() => {
+      resumeTimer(username, () => {
+        console.log("Timer resumed!");
+      });
+    }, 10000);
 
     console.log(`Updated declined_number for ${username}`);
   } catch (error) {
