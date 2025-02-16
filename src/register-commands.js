@@ -74,6 +74,18 @@ const commands = [
     ],
   },
   {
+    name: "forceunregister",
+    description: "Kényszerített törlés az adatbázisból",
+    options: [
+      {
+        name: "user",
+        description: "A felhasználó neve",
+        type: ApplicationCommandOptionType.User,
+        required: true,
+      },
+    ],
+  },
+  {
     name: "start",
     description: "Elindítja a versenyt",
   },

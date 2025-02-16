@@ -35,7 +35,9 @@ export async function addPoints(username, points) {
     );
 
     console.log(
-      `${points} hozzáadva ${username}-nak/nek. Új pontszám: ${user.points}`
+      `${points} hozzáadva ${username}-nak/nek. Új pontszám: ${
+        user.points + points
+      }`
     );
 
     const channelId = process.env.POINTS_CHANNEL_ID;
@@ -64,8 +66,17 @@ export async function removePoints(username, points) {
       throw new Error(`User not found: ${username}`);
     }
 
-    user.points = Math.max(0, user.points - points);
-    await user.save();
+    await User.update(
+      { points: user.points - points },
+      { where: { username: username } }
+    );
+
+    console.log(
+      `${points} levonva ${username}-tól/től. Új pontszám: ${getPoints(
+        username
+      )}`
+    );
+
     return user.points;
   } catch (error) {
     console.error("Error removing points:", error);

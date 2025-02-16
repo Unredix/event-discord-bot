@@ -4,26 +4,24 @@ import { Submits } from "../models/Submits.js";
 
 export async function approvedSubmit(submitId, guild) {
   try {
+    const submission = await Submits.findOne({
+      where: { SUBMIT_ID: submitId },
+    });
+    const username = submission.username;
+
+    const member = guild.members.cache.find((m) => m.user.tag === username);
+
     let roles = {
       lvl1: "1336726820221095936",
       lvl2: "1336726882472820747",
       lvl3: "1336727394492612648",
       lvl4: "1336727438553780234",
       lvl5: "1336727514869006447",
-      lvl6: "1338135228107067423", // Labeled as lvl6 but it's the winners role
+      lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
     };
 
-    const submission = await Submits.findOne({
-      where: { SUBMIT_ID: submitId },
-    });
-    if (!submission) {
-      console.error(`Submission with ID ${submitId} not found.`);
-      return;
-    }
-    const username = submission.username;
     const userRecord = await User.findOne({ where: { username } });
-    let declined_number = userRecord.declined_number;
-    const member = guild.members.cache.find((m) => m.user.tag === username);
+    const declined_number = userRecord.declined_number;
 
     for (let i = 1; i <= 5; i++) {
       if (member.roles.cache.has(roles[`lvl${i}`])) {
@@ -32,7 +30,6 @@ export async function approvedSubmit(submitId, guild) {
         break;
       }
     }
-
     let points = [5, 4, 3, 2, 1, 0][Math.min(declined_number, 5)];
 
     await User.update(
@@ -47,10 +44,6 @@ export async function approvedSubmit(submitId, guild) {
 
     await addPoints(username, points);
     let newPoints = await getPoints(username);
-
-    console.log(
-      `Added ${points} points to user ${username}. New total: ${newPoints}`
-    );
   } catch (error) {
     console.error("Error approving submission:", error);
   }

@@ -62,10 +62,6 @@ export async function unregisterUser(interaction) {
     console.log(`User unregistered: ${username}`);
   } catch (error) {
     console.error("Error unregistering user:", error);
-    await interaction.reply({
-      content: "Hiba merült fel a törlés során! (Szolj egy Rendezőnek)",
-      ephemeral: true,
-    });
   }
 }
 
@@ -89,5 +85,22 @@ export async function forceRegisterUser(username, group) {
     console.log(`User force registered: ${username}`);
   } catch (error) {
     console.error("Error registering user:", error);
+  }
+}
+
+export async function forceUnRegisterUser(username) {
+  try {
+    const existingUser = await User.findOne({ where: { username } });
+
+    if (!existingUser) {
+      console.log("User does not exist:", username);
+      return;
+    }
+
+    await User.destroy({ where: { username } });
+
+    console.log(`User force unregistered: ${username}`);
+  } catch (error) {
+    console.error("Error unregistering user:", error);
   }
 }

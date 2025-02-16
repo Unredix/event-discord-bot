@@ -5,6 +5,7 @@ import {
   registerUser,
   unregisterUser,
   forceRegisterUser,
+  forceUnRegisterUser,
 } from "../models/registerHandler.js";
 import { functionstart } from "./startfunction.js";
 import { approvedSubmit, declinedSubmit } from "./approveHandler.js";
@@ -15,6 +16,12 @@ import {
   refreshLeaderboardA1,
   refreshLeaderboardA2,
 } from "./leaderboardRefresh.js";
+import {
+  startTimer,
+  stopTimer,
+  pauseTimer,
+  resumeTimer,
+} from "./timeHandler.js";
 
 const {
   Client,
@@ -72,17 +79,17 @@ client.on("ready", async () => {
         await messages.forEach((message) => message.delete());
       }
     }
-    //   await refreshLeaderboardMain(guild, channelId);
-    //   await refreshLeaderboardA1(guild, channelId);
-    //   await refreshLeaderboardA2(guild, channelId);
-    //   setInterval(() => refreshLeaderboardMain(guild, channelId), 30000);
-    //   setInterval(() => refreshLeaderboardA1(guild, channelId), 30000);
-    //   setInterval(() => refreshLeaderboardA2(guild, channelId), 30000);
+    await refreshLeaderboardMain(guild, channelId);
+    await refreshLeaderboardA1(guild, channelId);
+    await refreshLeaderboardA2(guild, channelId);
+    setInterval(() => refreshLeaderboardMain(guild, channelId), 30000);
+    setInterval(() => refreshLeaderboardA1(guild, channelId), 30000);
+    setInterval(() => refreshLeaderboardA2(guild, channelId), 30000);
   }
 });
 
 client.on("interactionCreate", async (interaction) => {
-  console.log(`Interaction received: ${interaction.type}`);
+  // console.log(`Interaction received: ${interaction.type}`);
 
   if (interaction.isChatInputCommand()) {
     const roleId = `${process.env.PARTICIPANT_ROLE_ID}`;
@@ -209,10 +216,23 @@ client.on("interactionCreate", async (interaction) => {
         });
       }
 
-      const TARGET_ROLE_ID = "1336742482720985239";
-      const NEW_ROLE_ID = "1336726820221095936";
+      // const TARGET_ROLE_ID = "1336742482720985239";
+      // const NEW_ROLE_ID = "1336726820221095936";
 
-      await functionstart(interaction, TARGET_ROLE_ID, NEW_ROLE_ID);
+      // await functionstart(interaction, TARGET_ROLE_ID, NEW_ROLE_ID);
+      await startTimer("Unredix", 10000, () => {
+        console.log("Timer ended!");
+      });
+      setTimeout(() => {
+        pauseTimer("Unredix");
+      }, 5000);
+      setTimeout(() => {
+        resumeTimer("Unredix", () => {
+          console.log("Timer resumed!");
+        });
+      }, 10000);
+
+      await interaction.reply({ content: "Event elindítva!", ephemeral: true });
     } else if (interaction.commandName === "addpoints") {
       if (
         !interaction.member.permissions.has(
@@ -364,6 +384,28 @@ client.on("interactionCreate", async (interaction) => {
         const group = interaction.options.getString("group");
 
         await forceRegisterUser(target.tag, group);
+
+        interaction.reply({
+          content: `Nézd meg a console-t több információért!`,
+          ephemeral: true,
+        });
+      }
+      break;
+
+    case "forceunregister":
+      if (
+        !interaction.member.permissions.has(
+          PermissionsBitField.Flags.Administrator
+        )
+      ) {
+        return interaction.reply({
+          content: "Nincs jogosultságod ehhez a parancshoz!",
+          ephemeral: true,
+        });
+      } else {
+        const target = interaction.options.getUser("user");
+
+        await forceUnRegisterUser(target.tag);
 
         interaction.reply({
           content: `Nézd meg a console-t több információért!`,
