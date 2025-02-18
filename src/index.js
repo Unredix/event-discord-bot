@@ -111,24 +111,6 @@ client.on("interactionCreate", async (interaction) => {
       pauseTimer(submitter.tag);
 
       const row = new ActionRowBuilder().addComponents(
-        //   new ButtonBuilder()
-        //     .setCustomId(`approved_${submitId}`) // Attach submitId
-        //     .setLabel("Approved")
-        //     .setStyle(ButtonStyle.Success)
-        //     .setEmoji("✅"),
-
-        //   new ButtonBuilder()
-        //     .setCustomId(`not_approved_${submitId}`) // Attach submitId
-        //     .setLabel("Not Approved")
-        //     .setStyle(ButtonStyle.Danger)
-        //     .setEmoji("✖️"),
-
-        //   new ButtonBuilder()
-        //     .setCustomId(`other_${submitId}`)
-        //     .setLabel("Other")
-        //     .setStyle(ButtonStyle.Secondary)
-        //     .setEmoji("❓")
-        // );
         new ButtonBuilder()
           .setCustomId(`approved`)
           .setLabel("Approved")
