@@ -19,9 +19,18 @@ const sequelize = new Sequelize(
 (async () => {
   try {
     await sequelize.authenticate();
-    console.log("Database connection has been established successfully.");
+    console.log(
+      "\x1b[36m%s\x1b[0m",
+      `INFO`,
+      "Database connection has been established successfully."
+    );
   } catch (error) {
-    console.error("Unable to connect to the database:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Unable to connect to the database:",
+      error
+    );
   }
 })();
 
@@ -29,9 +38,14 @@ const sequelize = new Sequelize(
 (async () => {
   try {
     await sequelize.sync(); // Use { force: true } for overwriting existing tables
-    console.log("Database synchronized.");
+    console.log("\x1b[36m%s\x1b[0m", `INFO`, "Database synchronized.");
   } catch (error) {
-    console.error("Error syncing database:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error syncing database:",
+      error
+    );
   }
 })();
 

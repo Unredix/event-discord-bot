@@ -143,7 +143,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
-    console.log("Registering slash commands...");
+    console.log("\x1b[36m%s\x1b[0m", `INFO`, "Registering slash commands...");
     await rest.put(
       Routes.applicationGuildCommands(
         process.env.CLIENT_ID,
@@ -151,7 +151,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
       ),
       { body: commands }
     );
-    console.log("Slash commands registered.");
+    console.log("\x1b[36m%s\x1b[0m", `INFO`, "Slash commands registered.");
 
     // Fetching all registered commands
     const registeredCommands = await rest.get(
@@ -160,8 +160,13 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
         process.env.GUILD_ID
       )
     );
-    console.log("Registered commands:", registeredCommands);
+    console.log(
+      "\x1b[36m%s\x1b[0m",
+      `INFO`,
+      "Registered commands:",
+      registeredCommands
+    );
   } catch (error) {
-    console.log(`Error: ${error}`);
+    console.error("\x1b[91m%s\x1b[0m", `ERROR`, `Error: ${error}`);
   }
 })();

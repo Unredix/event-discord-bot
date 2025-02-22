@@ -29,7 +29,12 @@ export async function registerUser(interaction) {
     });
     console.log(`User registered: ${username}`);
   } catch (error) {
-    console.error("Error registering user:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error registering user:",
+      error
+    );
     await interaction.reply({
       content: "Hiba merült fel a regisztráció során! (Szolj egy Rendezőnek)",
       ephemeral: true,
@@ -61,7 +66,12 @@ export async function unregisterUser(interaction) {
 
     console.log(`User unregistered: ${username}`);
   } catch (error) {
-    console.error("Error unregistering user:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error unregistering user:",
+      error
+    );
   }
 }
 
@@ -84,7 +94,12 @@ export async function forceRegisterUser(username, group) {
 
     console.log(`User force registered: ${username}`);
   } catch (error) {
-    console.error("Error registering user:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error registering user:",
+      error
+    );
   }
 }
 
@@ -101,6 +116,11 @@ export async function forceUnRegisterUser(username) {
 
     console.log(`User force unregistered: ${username}`);
   } catch (error) {
-    console.error("Error unregistering user:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error unregistering user:",
+      error
+    );
   }
 }

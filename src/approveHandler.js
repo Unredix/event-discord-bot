@@ -8,6 +8,28 @@ export async function approvedSubmit(submitId, guild) {
     const submission = await Submits.findOne({
       where: { SUBMIT_ID: submitId },
     });
+
+    if (!submission) {
+      console.error(
+        "\x1b[91m%s\x1b[0m",
+        `ERROR`,
+        `Submission with ID ${submitId} not found.`
+      );
+      return;
+    }
+
+    if (
+      submission.approval === "Approved" ||
+      submission.approval === "Denied"
+    ) {
+      console.error(
+        "\x1b[91m%s\x1b[0m",
+        `ERROR`,
+        `Submission with ID ${submitId} already approved or denied.`
+      );
+      return;
+    }
+
     const username = submission.username;
 
     const member = guild.members.cache.find((m) => m.user.tag === username);
@@ -18,10 +40,18 @@ export async function approvedSubmit(submitId, guild) {
       lvl3: "1336727394492612648",
       lvl4: "1336727438553780234",
       lvl5: "1336727514869006447",
-      lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
+      lvl6: "1338135228107067423", // Labeled as lvl6 but it's the winners role
     };
 
     const userRecord = await User.findOne({ where: { username } });
+    if (!userRecord) {
+      console.error(
+        "\x1b[91m%s\x1b[0m",
+        `ERROR`,
+        `User ${username} not found in database.`
+      );
+      return;
+    }
     const declined_number = userRecord.declined_number;
 
     for (let i = 1; i <= 5; i++) {
@@ -45,7 +75,7 @@ export async function approvedSubmit(submitId, guild) {
 
     if (member.roles.cache.has(roles[`lvl6`])) {
       resumeTimer(username, () => {
-        console.log("Timer resumed!");
+        console.log("\x1b[36m%s\x1b[0m", `INFO`, "Timer resumed!");
       });
       await addPoints(
         username,
@@ -54,12 +84,17 @@ export async function approvedSubmit(submitId, guild) {
     }
 
     resumeTimer(username, () => {
-      console.log("Timer resumed!");
+      console.log("\x1b[36m%s\x1b[0m", `INFO`, "Timer resumed!");
     });
     await addPoints(username, points);
     let newPoints = await getPoints(username);
   } catch (error) {
-    console.error("Error approving submission:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error approving submission:",
+      error
+    );
   }
 }
 
@@ -70,7 +105,23 @@ export async function declinedSubmit(submitId, guild) {
     });
 
     if (!submission) {
-      console.error(`Submission with ID ${submitId} not found.`);
+      console.error(
+        "\x1b[91m%s\x1b[0m",
+        `ERROR`,
+        `Submission with ID ${submitId} not found.`
+      );
+      return;
+    }
+
+    if (
+      submission.approval === "Denied" ||
+      submission.approval === "Approved"
+    ) {
+      console.error(
+        "\x1b[91m%s\x1b[0m",
+        `ERROR`,
+        `Submission with ID ${submitId} already denied or approved.`
+      );
       return;
     }
 
@@ -84,11 +135,15 @@ export async function declinedSubmit(submitId, guild) {
       lvl3: "1336727394492612648",
       lvl4: "1336727438553780234",
       lvl5: "1336727514869006447",
-      lvl6: "1338135228107067423", //Labeled as lvl6 but it's the winners role
+      lvl6: "1338135228107067423", // Labeled as lvl6 but it's the winners role
     };
 
     if (!userRecord) {
-      console.error(`User ${username} not found in database.`);
+      console.error(
+        "\x1b[91m%s\x1b[0m",
+        `ERROR`,
+        `User ${username} not found in database.`
+      );
       return;
     }
 
@@ -115,12 +170,21 @@ export async function declinedSubmit(submitId, guild) {
 
     setTimeout(() => {
       resumeTimer(username, () => {
-        console.log("Timer resumed!");
+        console.log("\x1b[36m%s\x1b[0m", `INFO`, "Timer resumed!");
       });
     }, 1000);
 
-    console.log(`Updated declined_number for ${username}`);
+    console.log(
+      "\x1b[36m%s\x1b[0m",
+      `INFO`,
+      `Updated declined_number for ${username}`
+    );
   } catch (error) {
-    console.error("Error declining submission:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error declining submission:",
+      error
+    );
   }
 }

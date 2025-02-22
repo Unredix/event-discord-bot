@@ -11,7 +11,12 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
         process.env.GUILD_ID
       )
     );
-    console.log("Registered commands:", registeredCommands);
+    console.log(
+      "\x1b[36m%s\x1b[0m",
+      `INFO`,
+      "Registered commands:",
+      registeredCommands
+    );
 
     const commandId = registeredCommands.find(
       (cmd) => cmd.name === "addpoints"
@@ -24,8 +29,12 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
         commandId
       )
     );
-    console.log(`Command with ID ${commandId} deleted.`);
+    console.log(
+      "\x1b[93m%s\x1b[0m",
+      `ACTION`,
+      `Command with ID ${commandId} deleted.`
+    );
   } catch (error) {
-    console.log(`Error: ${error}`);
+    console.error("\x1b[91m%s\x1b[0m", `ERROR`, `Error: ${error}`);
   }
 })();

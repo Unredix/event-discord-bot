@@ -25,7 +25,7 @@ export async function addPoints(username, points) {
     );
 
     if (!user) {
-      console.error(`${username} nem található.`);
+      console.error("\x1b[91m%s\x1b[0m", `ERROR`, `${username} nem található.`);
       return;
     }
 
@@ -35,6 +35,8 @@ export async function addPoints(username, points) {
     );
 
     console.log(
+      "\x1b[36m%s\x1b[0m",
+      `INFO`,
       `${points} hozzáadva ${username}-nak/nek. Új pontszám: ${
         user.points + points
       }`
@@ -44,12 +46,12 @@ export async function addPoints(username, points) {
     const channel = client.channels.cache.get(channelId);
 
     if (!channel) {
-      console.error("Csatorna nem található.");
+      console.error("\x1b[91m%s\x1b[0m", `ERROR`, "Csatorna nem található.");
       return;
     }
     channel.send(points + " pont hozzáadva " + username + " felhasználónak.");
   } catch (error) {
-    console.error("Error adding points:", error);
+    console.error("\x1b[91m%s\x1b[0m", `ERROR`, "Error adding points:", error);
   }
 }
 
@@ -72,6 +74,8 @@ export async function removePoints(username, points) {
     );
 
     console.log(
+      "\x1b[36m%s\x1b[0m",
+      `INFO`,
       `${points} levonva ${username}-tól/től. Új pontszám: ${getPoints(
         username
       )}`
@@ -79,7 +83,12 @@ export async function removePoints(username, points) {
 
     return user.points;
   } catch (error) {
-    console.error("Error removing points:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error removing points:",
+      error
+    );
     throw error;
   }
 }
@@ -99,7 +108,7 @@ export async function getPoints(username) {
 
     return user.points;
   } catch (error) {
-    console.error("Error getting points:", error);
+    console.error("\x1b[91m%s\x1b[0m", `ERROR`, "Error getting points:", error);
     throw error;
   }
 }

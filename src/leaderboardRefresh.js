@@ -27,7 +27,7 @@ export async function refreshLeaderboardMain(guild, channelId) {
 
     const targetChannel = guild.channels.cache.get(channelId);
     if (!targetChannel) {
-      console.error("Target channel not found");
+      console.error("\x1b[91m%s\x1b[0m", `ERROR`, "Target channel not found");
       return;
     }
 
@@ -41,7 +41,12 @@ export async function refreshLeaderboardMain(guild, channelId) {
       leaderboardMessageIdMain = message.id;
     }
   } catch (error) {
-    console.error("Error refreshing leaderboard:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error refreshing leaderboard:",
+      error
+    );
   }
 }
 
@@ -70,7 +75,7 @@ export async function refreshLeaderboardA1(guild, channelId) {
 
     const targetChannel = guild.channels.cache.get(channelId);
     if (!targetChannel) {
-      console.error("Target channel not found");
+      console.error("\x1b[91m%s\x1b[0m", `ERROR`, "Target channel not found");
       return;
     }
 
@@ -84,7 +89,12 @@ export async function refreshLeaderboardA1(guild, channelId) {
       leaderboardMessageIdA1 = message.id;
     }
   } catch (error) {
-    console.error("Error refreshing leaderboard:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error refreshing leaderboard:",
+      error
+    );
   }
 }
 
@@ -113,7 +123,7 @@ export async function refreshLeaderboardA2(guild, channelId) {
 
     const targetChannel = guild.channels.cache.get(channelId);
     if (!targetChannel) {
-      console.error("Target channel not found");
+      console.error("\x1b[91m%s\x1b[0m", `ERROR`, "Target channel not found");
       return;
     }
 
@@ -127,6 +137,11 @@ export async function refreshLeaderboardA2(guild, channelId) {
       leaderboardMessageIdA2 = message.id;
     }
   } catch (error) {
-    console.error("Error refreshing leaderboard:", error);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error refreshing leaderboard:",
+      error
+    );
   }
 }

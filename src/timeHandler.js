@@ -43,13 +43,18 @@ export async function startTimer(username, duration, callback) {
         await callback(username);
         userTimers.delete(username);
       } catch (error) {
-        console.error("Error executing callback:", error);
+        console.error(
+          "\x1b[91m%s\x1b[0m",
+          `ERROR`,
+          "Error executing callback:",
+          error
+        );
       }
     }, duration);
 
     userTimeouts.set(username, timer);
   } catch (error) {
-    console.error("Error starting timer:", error);
+    console.error("\x1b[91m%s\x1b[0m", `ERROR`, "Error starting timer:", error);
   }
 }
 
@@ -70,7 +75,11 @@ export function pauseTimer(username) {
     );
     return remainingTime;
   } else {
-    console.error(`No timer found for ${username}`);
+    console.error(
+      "\x1b[95m%s\x1b[0m",
+      `WARNING`,
+      `No timer found for ${username}`
+    );
   }
 }
 
@@ -93,13 +102,22 @@ export function resumeTimer(username, callback) {
         await callback(username);
         userTimers.delete(username);
       } catch (error) {
-        console.error("Error executing callback:", error);
+        console.error(
+          "\x1b[91m%s\x1b[0m",
+          `ERROR`,
+          "Error executing callback:",
+          error
+        );
       }
     }, remainingTime);
 
     userTimeouts.set(username, timer);
   } else {
-    console.error(`No paused timer found for ${username}`);
+    console.error(
+      "\x1b[93m%s\x1b[0m",
+      `WARNING`,
+      `No paused timer found for ${username}`
+    );
   }
 }
 
@@ -115,6 +133,10 @@ export function stopTimer(username) {
     userTimeouts.delete(username);
     channel.send(`Időzítő törölve ${username} számára`);
   } else {
-    console.error(`No timer found for ${username}`);
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      `No timer found for ${username}`
+    );
   }
 }

@@ -45,9 +45,6 @@ class IDGenerator {
   }
 }
 
-const idGenerator = new IDGenerator();
-const submitId = idGenerator.generate();
-
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -60,7 +57,7 @@ const client = new Client({
 });
 
 client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  console.log("\x1b[36m%s\x1b[0m", `INFO`, `Logged in as ${client.user.tag}!`);
 });
 
 client.on("ready", async () => {
@@ -86,6 +83,11 @@ client.on("ready", async () => {
 client.on("interactionCreate", async (interaction) => {
   // console.log(`Interaction received: ${interaction.type}`);
 
+  const idGenerator = new IDGenerator();
+  const submitId = idGenerator.generate();
+
+  console.log("\x1b[36m%s\x1b[0m", `INFO`, `Generated submit ID: ${submitId}`);
+
   if (interaction.isChatInputCommand()) {
     const roleId = `${process.env.PARTICIPANT_ROLE_ID}`;
 
@@ -100,13 +102,25 @@ client.on("interactionCreate", async (interaction) => {
       const attachment = interaction.options.getAttachment("attachment");
       const submitter = interaction.user;
 
+      console.log(
+        "\x1b[36m%s\x1b[0m",
+        `INFO`,
+        "Creating new submission record:",
+        submitId,
+        submitter.tag
+      );
+
       await Submits.create({
         SUBMIT_ID: submitId,
         username: submitter.tag,
         approval: "undecided",
       });
 
-      console.log(`Submission received from ${submitter.tag}`);
+      console.log(
+        "\x1b[93m%s\x1b[0m",
+        `ACTION`,
+        `Submission received from ${submitter.tag}`
+      );
 
       pauseTimer(submitter.tag);
 
@@ -164,7 +178,7 @@ client.on("interactionCreate", async (interaction) => {
       }
 
       await interaction.reply({
-        content: "Your code has been submitted!",
+        content: "A kódodat sikeresen elküldted!",
         ephemeral: true,
       });
     } else if (interaction.commandName === "clear") {
@@ -269,7 +283,11 @@ client.on("interactionCreate", async (interaction) => {
       });
     }
   } else if (interaction.isButton()) {
-    console.log(`Button interaction received: ${interaction.customId}`);
+    console.log(
+      "\x1b[93m%s\x1b[0m",
+      `ACTION`,
+      `Button interaction received: ${interaction.customId}`
+    );
 
     // const [action, submitId] = interaction.customId.split("_");
 

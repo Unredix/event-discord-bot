@@ -14,9 +14,19 @@ export async function functionstart(interaction, targetRoleId, newRoleId) {
         !member.roles.cache.has(newRoleId)
       ) {
         await member.roles.add(newRoleId).catch(console.error);
-        console.log("Timer started to: ", member.user.tag);
+        console.log(
+          "\x1b[36m%s\x1b[0m",
+          `INFO`,
+          "Timer started to: ",
+          member.user.tag
+        );
         await startTimer(member.user.tag, 100000, () => {
-          console.log("Timer ended!");
+          console.log(
+            "\x1b[36m%s\x1b[0m",
+            `INFO`,
+            "Timer ended for: ",
+            member.user.tag
+          );
         });
       }
     }
@@ -26,7 +36,7 @@ export async function functionstart(interaction, targetRoleId, newRoleId) {
       ephemeral: true,
     });
   } catch (error) {
-    console.error(error);
+    console.error("\x1b[91m%s\x1b[0m", `ERROR`, error);
     await interaction.followUp({
       content: "An error occurred while starting the event.",
       ephemeral: true,
