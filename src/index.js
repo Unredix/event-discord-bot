@@ -45,6 +45,9 @@ class IDGenerator {
   }
 }
 
+const submissionMap = new Map();
+const idGenerator = new IDGenerator();
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -83,11 +86,6 @@ client.on("ready", async () => {
 client.on("interactionCreate", async (interaction) => {
   // console.log(`Interaction received: ${interaction.type}`);
 
-  const idGenerator = new IDGenerator();
-  const submitId = idGenerator.generate();
-
-  console.log("\x1b[36m%s\x1b[0m", `INFO`, `Generated submit ID: ${submitId}`);
-
   if (interaction.isChatInputCommand()) {
     const roleId = `${process.env.PARTICIPANT_ROLE_ID}`;
 
@@ -99,8 +97,18 @@ client.on("interactionCreate", async (interaction) => {
         });
       }
 
+      const submitId = idGenerator.generate();
+
+      // console.log(
+      //   "\x1b[36m%s\x1b[0m",
+      //   `INFO`,
+      //   `Generated submit ID: ${submitId}`
+      // );
+
       const attachment = interaction.options.getAttachment("attachment");
       const submitter = interaction.user;
+
+      submissionMap.set(submitter.tag, submitId);
 
       console.log(
         "\x1b[36m%s\x1b[0m",
@@ -312,6 +320,8 @@ client.on("interactionCreate", async (interaction) => {
     // }
 
     // TODO: Editelni kéne valahogy a embedet scopon kívül...
+
+    const submitId = submissionMap.get(interaction.user.tag);
 
     if (interaction.customId === "approved") {
       approvedSubmit(submitId, interaction.guild);
