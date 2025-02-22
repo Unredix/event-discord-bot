@@ -114,7 +114,7 @@ export function resumeTimer(username, callback) {
     userTimeouts.set(username, timer);
   } else {
     console.error(
-      "\x1b[93m%s\x1b[0m",
+      "\x1b[95m%s\x1b[0m",
       `WARNING`,
       `No paused timer found for ${username}`
     );

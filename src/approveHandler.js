@@ -3,6 +3,21 @@ import { User } from "../models/User.js";
 import { Submits } from "../models/Submits.js";
 import { pauseTimer, resumeTimer } from "./timeHandler.js";
 
+// TODO: Megcsinálni, hogy a bot mengpingelje a submittert, hogy a submissionje elfogadásra került a következő csatornában.
+
+async function sendMsg(channel, msg) {
+  try {
+    await channel.send(msg);
+  } catch (error) {
+    console.error(
+      "\x1b[91m%s\x1b[0m",
+      `ERROR`,
+      "Error sending message:",
+      error
+    );
+  }
+}
+
 export async function approvedSubmit(submitId, guild) {
   try {
     const submission = await Submits.findOne({
@@ -43,6 +58,14 @@ export async function approvedSubmit(submitId, guild) {
       lvl6: "1338135228107067423", // Labeled as lvl6 but it's the winners role
     };
 
+    let channels = {
+      lvl1: "1326247307922112513",
+      lvl2: "1336728547087224935",
+      lvl3: "1336728616494436402",
+      lvl4: "1336728671888605336",
+      lvl5: "1336728766373822484",
+    };
+
     const userRecord = await User.findOne({ where: { username } });
     if (!userRecord) {
       console.error(
@@ -58,6 +81,7 @@ export async function approvedSubmit(submitId, guild) {
       if (member.roles.cache.has(roles[`lvl${i}`])) {
         await member.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
         await member.roles.remove(roles[`lvl${i}`]).catch(console.error);
+
         break;
       }
     }
@@ -75,7 +99,11 @@ export async function approvedSubmit(submitId, guild) {
 
     if (member.roles.cache.has(roles[`lvl6`])) {
       resumeTimer(username, () => {
-        console.log("\x1b[36m%s\x1b[0m", `INFO`, "Timer resumed!");
+        console.log(
+          "\x1b[36m%s\x1b[0m",
+          `INFO`,
+          `Timer resumed for ${username} as they are a winner!`
+        );
       });
       await addPoints(
         username,
@@ -84,7 +112,7 @@ export async function approvedSubmit(submitId, guild) {
     }
 
     resumeTimer(username, () => {
-      console.log("\x1b[36m%s\x1b[0m", `INFO`, "Timer resumed!");
+      console.log("\x1b[36m%s\x1b[0m", `INFO`, "Timer resumed for", username);
     });
     await addPoints(username, points);
     let newPoints = await getPoints(username);

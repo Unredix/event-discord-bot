@@ -48,6 +48,8 @@ class IDGenerator {
 const submissionMap = new Map();
 const idGenerator = new IDGenerator();
 
+const embedMap = new Map();
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -85,6 +87,8 @@ client.on("ready", async () => {
 
 client.on("interactionCreate", async (interaction) => {
   // console.log(`Interaction received: ${interaction.type}`);
+
+  let SCC = ""; // Submited Channel Constant
 
   if (interaction.isChatInputCommand()) {
     const roleId = `${process.env.PARTICIPANT_ROLE_ID}`;
@@ -152,6 +156,8 @@ client.on("interactionCreate", async (interaction) => {
           .setEmoji("❓")
       );
 
+      SCC = interaction.channel?.name;
+
       const embed = new EmbedBuilder()
         .setColor(0x0099ff)
         .setTitle("Code Submission")
@@ -159,15 +165,16 @@ client.on("interactionCreate", async (interaction) => {
           { name: "Submitted by", value: `${submitter.tag}`, inline: true },
           {
             name: "Submitted in",
-            value: `${interaction.channel?.name || "Unknown"}`,
+            value: `${SCC || "Unknown"}`,
             inline: true,
           },
           { name: "Submit ID", value: submitId, inline: false },
           { name: "Status", value: "Pending approval", inline: false },
-          { name: "Points", value: "not yet known", inline: true },
-          { name: "Time of submission", value: "0", inline: true }
+          { name: "Points", value: "not yet known", inline: true }
         )
         .setTimestamp();
+
+      embedMap.set(submitId, embed);
 
       if (attachment) {
         embed.addFields({
@@ -291,51 +298,91 @@ client.on("interactionCreate", async (interaction) => {
       });
     }
   } else if (interaction.isButton()) {
-    console.log(
-      "\x1b[93m%s\x1b[0m",
-      `ACTION`,
-      `Button interaction received: ${interaction.customId}`
-    );
-
-    // const [action, submitId] = interaction.customId.split("_");
-
-    // if (action === "approved") {
-    //   await approvedSubmit(submitId, interaction.guild);
-    //   await interaction.reply({
-    //     content: `Submission **${submitId}** has been approved!`,
-    //     ephemeral: true,
-    //   });
-    // } else if (action === "not") {
-    //   console.log(submitId);
-    //   await declinedSubmit(submitId, interaction.guild);
-    //   await interaction.reply({
-    //     content: `Submission **${submitId}** was not approved!`,
-    //     ephemeral: true,
-    //   });
-    // } else if (action === "other") {
-    //   await interaction.reply({
-    //     content: "You clicked Other!",
-    //     ephemeral: true,
-    //   });
-    // }
-
-    // TODO: Editelni kéne valahogy a embedet scopon kívül...
+    // console.log(
+    //   "\x1b[93m%s\x1b[0m",
+    //   `ACTION`,
+    //   `Button interaction received: ${interaction.customId}`
+    // );
 
     const submitId = submissionMap.get(interaction.user.tag);
 
+    const originalEmbed = interaction.message.embeds[0];
+    const submittedBy = originalEmbed.fields.find(
+      (field) => field.name === "Submitted by"
+    ).value;
+    const submittedIn = originalEmbed.fields.find(
+      (field) => field.name === "Submitted in"
+    ).value;
+    const attachmentField = originalEmbed.fields.find(
+      (field) => field.name === "Attachment"
+    );
+    const attachment = attachmentField
+      ? {
+          name: attachmentField.value.split("[")[1].split("]")[0],
+          url: attachmentField.value.split("(")[1].split(")")[0],
+        }
+      : null;
+
     if (interaction.customId === "approved") {
       approvedSubmit(submitId, interaction.guild);
-      interaction;
-      await interaction.reply({
-        content: `Submission has been approved!`,
-        ephemeral: true,
-      });
+
+      console.log(
+        "\x1b[93m%s\x1b[0m",
+        `ACTION`,
+        `Submission approved: ${submitId}`
+      );
+
+      const updatedEmbed = new EmbedBuilder()
+        .setColor(0x339b33)
+        .setTitle("Code Submission")
+        .addFields(
+          { name: "Submitted by", value: submittedBy, inline: true },
+          { name: "Submitted in", value: submittedIn, inline: true },
+          { name: "Submit ID", value: submitId, inline: false },
+          { name: "Status", value: "Approved", inline: false },
+          { name: "Points", value: "not yet known", inline: true }
+        )
+        .setTimestamp();
+
+      if (attachment) {
+        updatedEmbed.addFields({
+          name: "Attachment",
+          value: `[${attachment.name}](${attachment.url})`,
+          inline: false,
+        });
+      }
+
+      await interaction.update({ embeds: [updatedEmbed], components: [] });
     } else if (interaction.customId === "not_approved") {
       declinedSubmit(submitId, interaction.guild);
-      await interaction.reply({
-        content: `Submission was not approved!`,
-        ephemeral: true,
-      });
+
+      console.log(
+        "\x1b[93m%s\x1b[0m",
+        `ACTION`,
+        `Submission denied: ${submitId}`
+      );
+
+      const updatedEmbed = new EmbedBuilder()
+        .setColor(0xcc0000)
+        .setTitle("Code Submission")
+        .addFields(
+          { name: "Submitted by", value: submittedBy, inline: true },
+          { name: "Submitted in", value: submittedIn, inline: true },
+          { name: "Submit ID", value: submitId, inline: false },
+          { name: "Status", value: "Denied", inline: false },
+          { name: "Points", value: "None", inline: true }
+        )
+        .setTimestamp();
+
+      if (attachment) {
+        updatedEmbed.addFields({
+          name: "Attachment",
+          value: `[${attachment.name}](${attachment.url})`,
+          inline: false,
+        });
+      }
+
+      await interaction.update({ embeds: [updatedEmbed], components: [] });
     } else if (interaction.customId === "other") {
       await interaction.reply({
         content: "You clicked Other!",
