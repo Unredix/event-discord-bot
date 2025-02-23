@@ -203,7 +203,7 @@ client.on("interactionCreate", async (interaction) => {
         )
       ) {
         return interaction.reply({
-          content: "You do not have permission to use this command.",
+          content: "Nincs jogod ezt a parancsot használni.",
           ephemeral: true,
         });
       }

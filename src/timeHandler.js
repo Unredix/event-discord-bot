@@ -67,8 +67,10 @@ export function pauseTimer(username) {
 
   if (endTime && timer) {
     clearTimeout(timer);
-    const remainingTime = endTime - Date.now();
-    userTimers.set(username, remainingTime);
+    const remainingTime = Math.max(endTime - Date.now(), 0);
+
+    // 🔥 FIX: Store both endTime and remainingTime in an object
+    userTimers.set(username, { endTime, remainingTime });
 
     channel.send(
       `Időzítő szüneteltetve ${username} számára. Ennyi ideje maradt hátra: ${remainingTime}ms`
@@ -87,15 +89,15 @@ export function resumeTimer(username, callback) {
   const channelId = process.env.TIMER_CHANNEL_ID;
   const channel = client.channels.cache.get(channelId);
 
-  const remainingTime = userTimers.get(username);
+  const timerData = userTimers.get(username);
 
-  if (remainingTime) {
+  if (timerData && timerData.remainingTime) {
+    const newEndTime = Date.now() + timerData.remainingTime;
+    userTimers.set(username, newEndTime); // Store new end timestamp
+
     channel.send(
-      `${username}-nak/nek ${remainingTime}ms ideje maradt a timerből`
+      `${username}-nak/nek ${timerData.remainingTime}ms ideje maradt a timerből`
     );
-
-    const endTime = Date.now() + remainingTime;
-    userTimers.set(username, endTime);
 
     const timer = setTimeout(async () => {
       try {
@@ -109,7 +111,7 @@ export function resumeTimer(username, callback) {
           error
         );
       }
-    }, remainingTime);
+    }, timerData.remainingTime);
 
     userTimeouts.set(username, timer);
   } else {
@@ -126,17 +128,24 @@ export function stopTimer(username) {
   const channel = client.channels.cache.get(channelId);
 
   const timer = userTimeouts.get(username);
+  const timerData = userTimers.get(username);
+  if (!timerData) return 0;
+
+  const remainingTime = Math.max(timerData.endTime - Date.now(), 0);
 
   if (timer) {
     clearTimeout(timer);
     userTimers.delete(username);
     userTimeouts.delete(username);
     channel.send(`Időzítő törölve ${username} számára`);
+
+    return remainingTime;
   } else {
     console.error(
       "\x1b[91m%s\x1b[0m",
       `ERROR`,
       `No timer found for ${username}`
     );
+    return 0;
   }
 }

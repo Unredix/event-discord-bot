@@ -20,7 +20,7 @@ export async function functionstart(interaction, targetRoleId, newRoleId) {
           "Timer started to: ",
           member.user.tag
         );
-        await startTimer(member.user.tag, 100000, () => {
+        await startTimer(member.user.tag, 3600000, () => {
           console.log(
             "\x1b[36m%s\x1b[0m",
             `INFO`,
