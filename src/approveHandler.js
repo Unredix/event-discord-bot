@@ -102,14 +102,21 @@ export async function approvedSubmit(submitId, guild) {
         await member.roles.add(roles[`lvl${i + 1}`]).catch(console.error);
         await member.roles.remove(roles[`lvl${i}`]).catch(console.error);
 
-        await sendMsg(
-          guild.channels.cache.get(channels[`lvl${i}`]),
-          `<@${
-            member.id
-          }> A kódod elfogadásra került! Itt folytathatod a játékot: <#${
-            channels[`lvl${i + 1}`]
-          }>.`
-        );
+        if (i == 5) {
+          await sendMsg(
+            guild.channels.cache.get(channels[`lvl${i}`]),
+            `<@${member.id}> A kódod elfogadásra került! Gratulálunk, sikeresen teljesítetted a játékot!`
+          );
+        } else {
+          await sendMsg(
+            guild.channels.cache.get(channels[`lvl${i}`]),
+            `<@${
+              member.id
+            }> A kódod elfogadásra került! Itt folytathatod a játékot: <#${
+              channels[`lvl${i + 1}`]
+            }>.`
+          );
+        }
         break;
       }
     }
