@@ -304,8 +304,6 @@ client.on("interactionCreate", async (interaction) => {
     //   `Button interaction received: ${interaction.customId}`
     // );
 
-    const submitId = submissionMap.get(interaction.user.tag);
-
     const originalEmbed = interaction.message.embeds[0];
     const submittedBy = originalEmbed.fields.find(
       (field) => field.name === "Submitted by"
@@ -324,6 +322,10 @@ client.on("interactionCreate", async (interaction) => {
       : null;
 
     if (interaction.customId === "approved") {
+      const submitId = originalEmbed.fields.find(
+        (field) => field.name === "Submit ID"
+      ).value;
+
       approvedSubmit(submitId, interaction.guild);
 
       console.log(
@@ -354,6 +356,10 @@ client.on("interactionCreate", async (interaction) => {
 
       await interaction.update({ embeds: [updatedEmbed], components: [] });
     } else if (interaction.customId === "not_approved") {
+      const submitId = originalEmbed.fields.find(
+        (field) => field.name === "Submit ID"
+      ).value;
+
       declinedSubmit(submitId, interaction.guild);
 
       console.log(

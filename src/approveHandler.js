@@ -78,6 +78,12 @@ export async function approvedSubmit(submitId, guild) {
 
     const username = submission.username;
 
+    console.log(
+      "\x1b[32m%s\x1b[0m",
+      `DEBUG`,
+      `Approving submission with ID ${submitId} for ${username}`
+    );
+
     const member = guild.members.cache.find((m) => m.user.tag === username);
 
     const userRecord = await User.findOne({ where: { username } });
@@ -122,14 +128,22 @@ export async function approvedSubmit(submitId, guild) {
     if (member.roles.cache.has(roles[`lvl6`])) {
       const remainingTime = stopTimer(username);
 
-      console.log(`DEBUG: Remaining time for ${username}: ${remainingTime}`);
+      console.log(
+        "\x1b[32m%s\x1b[0m",
+        "DEBUG",
+        `Remaining time for ${username}: ${remainingTime}`
+      );
 
       if (remainingTime) {
         await pauseTimer(username);
 
         const points = Math.max(0, Math.floor(remainingTime / 50000));
 
-        console.log(`DEBUG: Points calculated for ${username}: ${points}`);
+        console.log(
+          "\x1b[32m%s\x1b[0m",
+          "DEBUG",
+          `Points calculated for ${username}: ${points}`
+        );
 
         await addPoints(username, points);
 
@@ -214,7 +228,7 @@ export async function declinedSubmit(submitId, guild) {
       if (member.roles.cache.has(roles[`lvl${i}`])) {
         await sendMsg(
           guild.channels.cache.get(channels[`lvl${i}`]),
-          `<@${member.id}> A kódod elutasításra került! Kérlek próbálkoz újra.`
+          `<@${member.id}> A kódod elutasításra került! Kérlek próbálkozz újra.`
         );
         break;
       }

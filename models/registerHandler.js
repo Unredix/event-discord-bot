@@ -27,7 +27,7 @@ export async function registerUser(interaction) {
       content: `**${username}** regisztrálva lett mint **${group}**!`,
       ephemeral: true,
     });
-    console.log(`User registered: ${username}`);
+    console.log("\x1b[36m%s\x1b[0m", `INFO`, `User registered: ${username}`);
   } catch (error) {
     console.error(
       "\x1b[91m%s\x1b[0m",
@@ -64,7 +64,7 @@ export async function unregisterUser(interaction) {
       ephemeral: true,
     });
 
-    console.log(`User unregistered: ${username}`);
+    console.log("\x1b[36m%s\x1b[0m", `INFO`, `User unregistered: ${username}`);
   } catch (error) {
     console.error(
       "\x1b[91m%s\x1b[0m",
@@ -80,7 +80,12 @@ export async function forceRegisterUser(username, group) {
     // Check if user already exists
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
-      console.log("User already exists:", username);
+      console.error(
+        "\x1b[91m%s\x1b[0m",
+        `ERROR`,
+        "User already exists:",
+        username
+      );
       return;
     }
 
