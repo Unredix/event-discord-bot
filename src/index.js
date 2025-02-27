@@ -208,6 +208,8 @@ client.on("interactionCreate", async (interaction) => {
         });
       }
 
+      // asd
+
       const count = interaction.options.getInteger("count");
       await interaction.channel.bulkDelete(count);
       await interaction.reply({
